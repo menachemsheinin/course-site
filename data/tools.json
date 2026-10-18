@@ -1,0 +1,24 @@
+{
+  "intro": "תוכנות שמשמשות בקורס וכלים חינמיים להרחבה.",
+  "groups": [
+    {
+      "title": "תוכנות הקורס",
+      "items": [
+        { "name": "AutoCAD", "desc": "הורדה ורישיון סטודנט", "url": "https://www.autodesk.com/education/edu-software/overview" },
+        { "name": "Rhino", "desc": "מידול NURBS", "url": "https://www.rhino3d.com/" },
+        { "name": "SketchUp Web", "desc": "מודלינג בדפדפן", "url": "https://app.sketchup.com/" }
+      ]
+    },
+    {
+      "title": "כלים חינמיים להרחבה",
+      "items": [
+        { "name": "Blender", "desc": "מודלינג, אנימציה ורינדור", "url": "https://www.blender.org/" },
+        { "name": "QGIS", "desc": "מערכת מידע גיאוגרפי", "url": "https://qgis.org/" },
+        { "name": "GIMP", "desc": "עריכת תמונות", "url": "https://www.gimp.org/" },
+        { "name": "Inkscape", "desc": "גרפיקה וקטורית", "url": "https://inkscape.org/" },
+        { "name": "Photopea", "desc": "עורך תמונות בדפדפן", "url": "https://www.photopea.com/" },
+        { "name": "Google Earth Pro", "desc": "תצלומי אוויר והקשר אתר", "url": "https://www.google.com/earth/versions/" }
+      ]
+    }
+  ]
+}

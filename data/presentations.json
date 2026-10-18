@@ -1,0 +1,43 @@
+{
+  "intro": "כל שלשה בוחרת פריט אחד מהרשימה ומציגה כ-10 דקות במפגש שיוקצה לה. הנושא לא אמור להופיע בהרצאות.",
+  "rules": [
+    "עבודה בשלשות. כל שלשה בוחרת נושא אחד, ללא כפילויות בין שלשות",
+    "זמן הצגה: כ-10 דקות כולל מעבר",
+    "מקורות: לא רק ויקיפדיה. ציינו מקורות בשקף האחרון",
+    "בסוף ההצגה: איך זה מתחבר למה שלמדנו בקורס?"
+  ],
+  "signupUrl": "",
+  "items": [
+    { "cat": "figure", "name": "דאגלס אנגלברט", "desc": "ממציא העכבר ו״הגברה קוגניטיבית״ (1968)" },
+    { "cat": "figure", "name": "בקמינסטר פולר", "desc": "הכיפה הגיאודזית, עיצוב לפי עיקרון מתמטי" },
+    { "cat": "figure", "name": "וויליאם ג׳יי מיטשל", "desc": "MIT, The Logic of Architecture (1990)" },
+    { "cat": "figure", "name": "סטיב ג׳ובס", "desc": "ה-GUI, Macintosh (1984) ופיקסאר" },
+    { "cat": "figure", "name": "אנטוני גאודי", "desc": "מודלים היפרבוליים-קטנריים, ״פרוטו-דיגיטלי״ בלי מחשב" },
+    { "cat": "figure", "name": "ריצ׳רד רוג׳רס ורנצו פיאנו", "desc": "מרכז פומפידו (1977) ואדריכלות היי-טק" },
+    { "cat": "figure", "name": "סטיבן קונס", "desc": "Coons Patches, משטחים חלקים (שנות ה-60)" },
+    { "cat": "figure", "name": "וויליאם פטר", "desc": "טבע את המונח Computer Graphics (1960)" },
+    { "cat": "figure", "name": "הרברט פלקר", "desc": "Solid Modeling ו-CSG, קורנל" },
+    { "cat": "figure", "name": "ואנוור בוש", "desc": "As We May Think (1945) ו-Memex" },
+    { "cat": "figure", "name": "ג׳יי.סי.אר. ליקליידר", "desc": "Man-Computer Symbiosis (1960), מימון ARPA" },
+    { "cat": "figure", "name": "צ׳אק איסטמן", "desc": "Building Description System, הבסיס הרעיוני ל-BIM" },
+    { "cat": "figure", "name": "ג׳ון וורנוק", "desc": "Adobe ו-PostScript (1982)" },
+    { "cat": "figure", "name": "טרנר וויטד", "desc": "Ray Tracing (1980)" },
+
+    { "cat": "topic", "name": "Mass Customization", "desc": "ייצור המוני של פריטים שכל אחד שונה מעט, בזכות תכנון וייצור ממוחשבים" },
+    { "cat": "topic", "name": "Voxel-based design", "desc": "ייצוג גוף כרשת ״פיקסלים תלת-ממדיים״" },
+    { "cat": "topic", "name": "Solid Modeling ו-CSG", "desc": "ייצוג גופים באמצעות פעולות בוליאניות" },
+    { "cat": "topic", "name": "Wireframe, Surface ו-Solid", "desc": "שלושה דורות של ייצוג גיאומטרי ב-CAD" },
+    { "cat": "topic", "name": "תקני קבצים: DXF, IGES ו-STEP", "desc": "איך תוכנות CAD שונות מדברות זו עם זו" },
+    { "cat": "topic", "name": "היסטוריית ה-CNC", "desc": "שורשי הייצור הממוחשב משנות ה-50" },
+    { "cat": "topic", "name": "Digital Fabrication", "desc": "מקובץ דיגיטלי לאובייקט פיזי" },
+
+    { "cat": "tool", "name": "SketchUp Web", "desc": "מודלינג תלת-ממדי מהיר בדפדפן" },
+    { "cat": "tool", "name": "AutoCAD Web", "desc": "גרסת הדפדפן של AutoCAD" },
+    { "cat": "tool", "name": "Blender", "desc": "מודלינג, אנימציה ורינדור בקוד פתוח" },
+    { "cat": "tool", "name": "QGIS", "desc": "מערכת מידע גיאוגרפי, ניתוח מפות ושכבות" },
+    { "cat": "tool", "name": "GIMP", "desc": "עריכת תמונות רסטר" },
+    { "cat": "tool", "name": "Inkscape", "desc": "גרפיקה וקטורית" },
+    { "cat": "tool", "name": "Photopea", "desc": "עורך תמונות בדפדפן" },
+    { "cat": "tool", "name": "Google Earth Pro", "desc": "תצלומי אוויר והקשר אתר" }
+  ]
+}

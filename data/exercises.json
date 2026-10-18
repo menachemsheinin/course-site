@@ -1,0 +1,27 @@
+{
+  "intro": "כל תרגיל נפתח לפני המפגש שלו. תרגיל שמסומן ״יפורסם בקרוב״ עדיין בהכנה.",
+  "items": [
+    {
+      "session": 1, "status": "open", "tool": "AutoCAD",
+      "title": "חתימה גרפית אישית",
+      "goal": "היכרות ראשונה עם AutoCAD דרך יצירת סימן אישי מצורות גיאומטריות בסיסיות.",
+      "tasks": [
+        "התקינו AutoCAD והפעילו את רישיון הסטודנט",
+        "שרטטו סימן או לוגו אישי באמצעות Line, Rectangle, Circle, Arc, Move, Copy ו-Trim",
+        "שמרו את הקובץ בשם: שם-משפחה_חתימה.dwg"
+      ],
+      "deliverable": "קובץ DWG אחד. הסימן ישמש אתכם בהמשך הקורס."
+    },
+    { "session": 2, "status": "soon", "tool": "AutoCAD", "title": "קובץ בסיס: השלמה ושינויים" },
+    { "session": 3, "status": "soon", "tool": "AutoCAD", "title": "תוכנית קומה: קואורדינטות, Layers, מידות ו-Hatch" },
+    { "session": 4, "status": "soon", "tool": "AutoCAD", "title": "חזיתות וייצוא DXF" },
+    { "session": 5, "status": "soon", "tool": "Rhino", "title": "היכרות עם Rhino ונקודות בקרה" },
+    { "session": 6, "status": "soon", "title": "יחידת לימוד 1: מחקר וסקיצת קונספט" },
+    { "session": 7, "status": "soon", "tool": "Rhino", "title": "מידול הקונספט הגושני" },
+    { "session": 8, "status": "soon", "tool": "Rhino", "title": "רינדור המודל" },
+    { "session": 9, "status": "soon", "tool": "Rhino", "title": "חתכים והדפסה בקנ״מ" },
+    { "session": 10, "status": "soon", "tool": "SketchUp Web", "title": "סיור קצר במודל" },
+    { "session": 11, "status": "soon", "title": "הדמיית AI למודל" },
+    { "session": 12, "status": "soon", "title": "הגשת תיק העבודות" }
+  ]
+}
