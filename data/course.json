@@ -2,14 +2,84 @@
   "title": "כלים דיגיטליים א׳",
   "subtitle": "שנה ב׳ · ארכיטקטורה · סמסטר א׳ תשפ״ז",
   "footer": "כלים דיגיטליים א׳ · מנחם שיינין",
+  "lecturer": { "name": "אדריכל מנחם שיינין", "email": "menahems@ariel.ac.il" },
   "announcements": [
     {
       "date": "18.10.2026",
-      "text": "ברוכים הבאים. המפגש הראשון ב-20/10. הכינו מחשב נייד עם חיבור לאינטרנט."
+      "text": "ברוכים הבאים. המפגש הראשון ב-20/10. הכינו מחשב נייד."
     }
   ],
-  "grading": [
-    "80% מבחן מסכם",
-    "20% פרזנטציה והגשת המצגת (עבודה בשלשות)"
-  ]
+  "courses": {
+    "bg": {
+      "name": "כלים דיגיטליים א׳ – רקע",
+      "short": "היסטוריה ותאוריה של העיצוב האדריכלי הדיגיטלי",
+      "credits": "2 נ״ז · 2 ש״ס",
+      "summary": [
+        "הקורס מהווה מבוא לעולם העיצוב האדריכלי הממוחשב, ומצייד את הסטודנטים ביסודות היסטוריים ותאורטיים הקשורים בעיצוב אדריכלי דיגיטלי.",
+        "הסטודנטים ייפגשו עם ההיסטוריה והתאוריה של העיצוב הממוחשב, ויכירו את האופן שבו טכנולוגיות דיגיטליות שינו את התחום ומשפיעים עליו.",
+        "הקורס מתמקד בהיסטוריה ובהתפתחויות הדיגיטליות של המאה ה-20, והוא הבסיס לקורס המעשי ״יישום כלים דיגיטליים א׳״."
+      ],
+      "prerequisites": "סיום בהצלחה של קורסי עיצוב בסיסי א׳ + ב׳ בשנה א׳.",
+      "structure": "הרצאות תוכן פרונטליות של המרצה ופרזנטציות סטודנטים.",
+      "requirements": [
+        "נוכחות חובה והכרחית על פי תקנון האוניברסיטה",
+        "פרזנטציה מול הכיתה בנושא נבחר"
+      ],
+      "equipment": [],
+      "grading": [
+        "80% מבחן מסכם",
+        "20% פרזנטציה והגשת המצגת (תרגיל קבוצתי)"
+      ],
+      "bibliography": [
+        "Carpo, Mario. The digital turn in architecture 1992-2012. Chichester: Wiley, 2013.",
+        "Carpo, M. (2011). The alphabet and the algorithm. MIT Press.",
+        "Grobman, Yasha J. and Neuman, Eran. Performalism: form and performance in digital architecture. Routledge, 2013.",
+        "Fox, Michael, et al. The Evolution of Computation in Architecture. Routledge, 2024.",
+        "Oxman Rivka and Oxman Robert. Theories of the Digital in Architecture. Routledge, USA.",
+        "Schumacher, Patrik. \"Parametricism as style: Parametricist manifesto.\" 11th Architecture Biennale, Venice (2008): 17-20.",
+        "Schumacher, Patrik. \"Parametricism: A new global style for architecture and urban design.\" Architectural Design 79.4 (2009): 14-23.",
+        "Tedeschi, Arturo. \"AAD algorithms-aided design.\" Parametric strategies using Grasshopper. Potenza, Italy: Edizioni Le Penseur (2014).",
+        "Woodbury, Robert. Elements of Parametric Design, 2010.",
+        "Burry, M. (2016). Antoni Gaudi and Frei Otto: Essential precursors to the parametricism manifesto. Architectural Design, 86(2), 30-35.",
+        "Oktan, S., & Vural, S. (2017). Parametricism: a style or a method. ARCHTHEO '17 / XI. Theory and History of Architecture Conference.",
+        "Chaillou, S. (2020). Archigan: Artificial intelligence x architecture. In Architectural intelligence (pp. 117-127). Springer, Singapore.",
+        "Frazer, J. (2016). Parametric computation: history and future. Architectural Design, 86(2), 18-23.",
+        "Steenson, M. W. (2022). Architectural intelligence: How designers and architects created the digital landscape. MIT Press.",
+        "Li, Y., Gao, W. & Lin, B. From type to network: a review of knowledge representation methods in architecture intelligence design. ARIN 1, 4 (2022)."
+      ],
+      "links": [
+        { "title": "Rhino", "url": "https://www.rhino3d.com/" },
+        { "title": "Adobe", "url": "https://www.adobe.com/" }
+      ]
+    },
+    "app": {
+      "name": "יישום כלים דיגיטליים א׳",
+      "short": "AutoCAD ו-Rhino: שרטוט, מידול, הנפשה וייצוג גרפי",
+      "credits": "2 נ״ז · 2 ש״ס",
+      "summary": [
+        "הקורס מתמקד בשילוב הכלים הדיגיטליים בתהליך העיצוב, כך שאלו יהיו חלק אינטגרלי מארגז הכלים ושולחן העבודה של הסטודנט בסטודיו ובדרכו המקצועית.",
+        "הקורס נלווה לקורס ״כלים דיגיטליים א׳ – רקע״, המתמקד בהיסטוריה ובהתפתחויות הדיגיטליות של המאה ה-20.",
+        "בקורס יוטמעו תוכנות שרטוט ומידול בסיסיות הרלוונטיות ללימודים ולפרקטיקה המעשית. הסטודנטים יתנסו בשרטוט דו-ממדי, מידול תלת-ממדי, הנפשה, עיצוב וייצוג גרפי."
+      ],
+      "prerequisites": "סיום בהצלחה של קורסי עיצוב בסיסי א׳ + ב׳ בשנה א׳.",
+      "structure": "שיעורי הדרכה, הדגמות, התנסות ותרגול מעשי.",
+      "requirements": [
+        "נוכחות חובה והכרחית על פי תקנון האוניברסיטה",
+        "עבודה ותרגול בכיתה והגשת תרגילים בזמן"
+      ],
+      "equipment": [
+        "מחשב נייד עם יכולת להריץ תוכנות גרפיות ותלת-ממד",
+        "מומלץ: מדפסת תלת-ממד ביתית"
+      ],
+      "grading": [
+        "25% הגשת תרגילי הקורס בזמן",
+        "75% הגשת קבצי מקור של פרויקט סטודיו (תיבדק איכות העבודה בהתאם לסטנדרטים שיוגדרו בקורס)"
+      ],
+      "bibliography": [],
+      "links": [
+        { "title": "Rhino", "url": "https://www.rhino3d.com/" },
+        { "title": "Autodesk", "url": "https://www.autodesk.com" }
+      ]
+    }
+  }
 }

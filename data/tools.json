@@ -12,6 +12,7 @@
     {
       "title": "כלים חינמיים להרחבה",
       "items": [
+        { "name": "ArtCraft Apps", "desc": "סט כלים חינמיים חדשים, כולל CADCraft לשרטוט ועיצוב", "url": "https://getartcraft.com/apps" },
         { "name": "Blender", "desc": "מודלינג, אנימציה ורינדור", "url": "https://www.blender.org/" },
         { "name": "QGIS", "desc": "מערכת מידע גיאוגרפי", "url": "https://qgis.org/" },
         { "name": "GIMP", "desc": "עריכת תמונות", "url": "https://www.gimp.org/" },
