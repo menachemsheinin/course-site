@@ -54,9 +54,17 @@
 
   /* ---------- כותרת ---------- */
 
+  // הלוגו: צבע הטקסט של הכותרת (לבן על כהה/צבעוני), מצויר כווקטור
+  const LOGO_SVG = '<svg viewBox="73 73 301 300" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="currentColor" d="M73 73 H152 L374 373 H296 Z M286 73 H374 V190 Z"/></svg>';
+  function logo() {
+    const el = h('span', { class: 'logo', 'aria-hidden': 'true' });
+    el.innerHTML = LOGO_SVG;
+    return el;
+  }
+
   function header(k, page) {
     const bar = h('div', { class: 'bar' },
-      h('a', { class: 'brand', href: '#/' }, D.course.title),
+      h('a', { class: 'brand', href: '#/' }, logo(), D.course.title),
       k ? h('a', { class: 'all', href: '#/' }, 'כל הקורסים') : null
     );
     const kids = [bar];
