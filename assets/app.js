@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const FILES = ['course', 'sessions', 'exercises', 'presentations', 'tools'];
+  const FILES = ['course', 'sessions', 'presentations', 'tools'];
   const D = {};
   const app = document.getElementById('app');
   const top = document.getElementById('top');
@@ -12,12 +12,12 @@
   const LETTER = { bg: 'א׳', app: 'ב׳' };
   const TABS = {
     bg: [['', 'סילבוס'], ['schedule', 'מפגשים'], ['presentations', 'פרזנטציות']],
-    app: [['', 'סילבוס'], ['schedule', 'מפגשים'], ['exercises', 'תרגילים'], ['tools', 'כלים']],
+    app: [['', 'סילבוס'], ['schedule', 'מפגשים'], ['tools', 'כלים']],
   };
   // כתובות ישנות
   const LEGACY = {
     background: '#/bg', practice: '#/app', presentations: '#/bg/presentations',
-    exercises: '#/app/exercises', schedule: '#/', tools: '#/app/tools',
+    exercises: '#/app', schedule: '#/', tools: '#/app/tools',
   };
 
   function h(tag, attrs, ...kids) {
@@ -176,44 +176,13 @@
           s.kind === 'makeup' ? h('span', { class: 'tag' }, 'השלמה') : null,
           s.guest ? h('span', { class: 'tag' }, 'הרצאת אורח') : null,
           x.presentations ? h('span', { class: 'tag' }, x.presentations + ' פרזנטציות') : null,
-          x.exercise ? h('a', { class: 'tag', href: '#/app/exercises' }, exLabel(x)) : null,
+          x.exercise ? h('span', { class: 'tag' }, exLabel(x)) : null,
           x.summary ? h('span', { class: 'sub' }, x.summary) : null,
           x.note ? h('span', { class: 'sub' }, x.note) : null
         )
       );
     });
     return [h('h1', {}, 'מפגשים'), h('div', { class: 'rows' }, rows)];
-  }
-
-  /* ---------- תרגילים (קורס יישום) ---------- */
-
-  const STATUS = { open: ['פתוח', 'ok'], soon: ['בקרוב', ''], closed: ['נסגר', ''] };
-
-  function exercises() {
-    const out = [h('h1', {}, 'תרגילים'), h('p', { class: 'muted' }, D.exercises.intro || '')];
-    D.exercises.items.forEach((e) => {
-      const st = STATUS[e.status] || STATUS.soon;
-      const open = e.status === 'open' || e.status === 'closed';
-      const card = h('article', { class: 'card ex ' + (open ? '' : 'soon'), id: 'e' + e.n },
-        h('h3', {}, 'תרגיל ' + e.n + ': ' + e.title, h('span', { class: 'tag ' + st[1] }, st[0])),
-        h('div', { class: 'meta' },
-          (/[–-]/.test(e.sessions) ? 'מפגשים ' : 'מפגש ') + e.sessions,
-          e.tool ? ' · ' + e.tool : '',
-          e.due ? ' · הגשה עד ' + fmt(e.due) : ''
-        )
-      );
-      if (open) {
-        if (e.goal) card.append(h('p', { style: 'margin:.6em 0 0' }, e.goal));
-        if ((e.tasks || []).length) card.append(h('ul', {}, e.tasks.map((x) => h('li', {}, x))));
-        if (e.deliverable) card.append(h('p', { style: 'margin:.4em 0' }, h('strong', {}, 'להגשה: '), e.deliverable));
-        const links = [];
-        if (e.files) e.files.forEach((f) => links.push(link(f.title, f.url)));
-        if (e.submitUrl) links.push(link('הגשה', e.submitUrl));
-        if (links.length) card.append(h('p', { class: 'small', style: 'margin:.4em 0 0' }, links.flatMap((l, i) => (i ? [' · ', l] : [l]))));
-      }
-      out.push(card);
-    });
-    return out;
   }
 
   /* ---------- פרזנטציות (קורס רקע) ---------- */
@@ -288,7 +257,7 @@
 
   const PAGES = {
     bg: { '': courseHome, schedule, presentations },
-    app: { '': courseHome, schedule, exercises, tools },
+    app: { '': courseHome, schedule, tools },
   };
 
   function render() {

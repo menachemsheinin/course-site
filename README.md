@@ -17,15 +17,12 @@
 |---|---|
 | הודעות, ציון, כותרת | `data/course.json` |
 | מפגשים: הרצאה, תרגול, חומרים | `data/sessions.json` |
-| תרגילים: פתיחה, הגשה | `data/exercises.json` |
 | רשימת נושאים לפרזנטציות | `data/presentations.json` |
 | קישורים לכלים | `data/tools.json` |
 
 העריכה אפשרית ישירות באתר GitHub (סמל העיפרון על הקובץ, אחר כך **Commit changes**), או מהמחשב עם `git push`.
 
 ### דוגמאות
-
-**לפרסם תרגיל:** ב-`exercises.json` שנו `"status": "soon"` ל-`"open"` והוסיפו `goal`, `tasks`, `deliverable`. אפשר גם `files` (קישורים לקבצים), `submitUrl` ו-`due` (תאריך בפורמט `2026-11-10`).
 
 **להוסיף חומר למפגש:** ב-`sessions.json` הוסיפו למפגש:
 ```json
