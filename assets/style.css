@@ -10,12 +10,12 @@
   --head-text: #f6f0e4;
 
   /* קורס א׳ – רקע: כחול ציאנוטייפ */
-  --c-bg: #1d4580;
-  --c-bg-soft: #dfe7f3;
+  --c-bg: #34506f;
+  --c-bg-soft: #e4e9ef;
   --on-bg: #ffffff;
   /* קורס ב׳ – יישום: כתום טרקוטה */
-  --c-app: #c2410c;
-  --c-app-soft: #fbe3d4;
+  --c-app: #9a5a42;
+  --c-app-soft: #f0e1d8;
   --on-app: #ffffff;
 
   --ok: #2f6b3f;
@@ -34,11 +34,11 @@
     --line: #35312b;
     --head: #0d0c0b;
 
-    --c-bg: #86b4ee;
-    --c-bg-soft: #1b2638;
+    --c-bg: #94adc9;
+    --c-bg-soft: #1c2530;
     --on-bg: #0a1424;
-    --c-app: #f28e5f;
-    --c-app-soft: #3a2217;
+    --c-app: #d19a80;
+    --c-app-soft: #33241c;
     --on-app: #2a0e03;
 
     --ok: #7cc58d;
