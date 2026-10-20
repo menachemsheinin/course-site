@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const FILES = ['course', 'sessions', 'presentations', 'tools', 'exercises', 'materials'];
+  const FILES = ['course', 'sessions', 'presentations', 'tools', 'exercises', 'materials', 'autocad'];
   const D = {};
   const app = document.getElementById('app');
   const top = document.getElementById('top');
@@ -427,17 +427,51 @@
     return out;
   }
 
-  function materials() {
+  function materials(k, sub) {
+    if (sub === 'autocad') return autocad();
     const items = (D.materials && D.materials.items) || [];
     return [
       h('h1', {}, 'חומרי למידה'),
       h('div', { class: 'grid' },
         items.map((i) =>
-          h('a', { class: 'card', href: i.url, target: '_blank', rel: 'noopener' },
+          h('a', { class: 'card', href: i.url, target: i.url.startsWith('#') ? null : '_blank', rel: 'noopener' },
             h('span', { class: 't' }, i.title), h('span', { class: 'd' }, i.desc || '')
           )
         )
       ),
+    ];
+  }
+
+  function autocad() {
+    const A = D.autocad;
+    const cards = [];
+    const secs = A.sections.map((s, n) => {
+      const grid = h('div', { class: 'vgrid' }, s.videos.map((v) => {
+        const c = h('a', { class: 'vcard', href: 'https://www.youtube.com/watch?v=' + v.id, target: '_blank', rel: 'noopener' },
+          h('img', { src: 'https://img.youtube.com/vi/' + v.id + '/hqdefault.jpg', alt: '', loading: 'lazy' }),
+          h('span', { class: 'vt' }, v.title),
+          h('span', { class: 'vm' }, v.dur + ' · ' + v.level + (v.desc ? ' · ' + v.desc : ''))
+        );
+        c._q = (v.title + ' ' + v.desc).toLowerCase();
+        cards.push(c);
+        return c;
+      }));
+      const sec = h('section', { id: 'ac-' + n }, h('h2', {}, s.emoji + ' ' + s.title), grid);
+      return sec;
+    });
+    const search = h('input', { type: 'search', class: 'vsearch', placeholder: 'חיפוש סרטון…', 'aria-label': 'חיפוש סרטון' });
+    search.addEventListener('input', () => {
+      const q = search.value.trim().toLowerCase();
+      cards.forEach((c) => { c.hidden = !!q && !c._q.includes(q); });
+      secs.forEach((sec) => { sec.hidden = !sec.querySelector('.vcard:not([hidden])'); });
+    });
+    const nav = h('div', { class: 'vnav' }, A.sections.map((s, n) =>
+      h('a', { href: '#/app/materials/autocad', onclick: (e) => { e.preventDefault(); secs[n].scrollIntoView({ behavior: 'smooth' }); } }, s.emoji + ' ' + s.title)));
+    return [
+      h('p', {}, h('a', { href: '#/app/materials' }, '← חומרי למידה')),
+      h('h1', {}, A.title),
+      h('p', { class: 'muted' }, A.intro + ' · ' + cards.length + ' סרטונים'),
+      search, nav, ...secs,
     ];
   }
 

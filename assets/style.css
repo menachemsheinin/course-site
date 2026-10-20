@@ -277,3 +277,16 @@ h2.withicon { display: flex; justify-content: space-between; align-items: center
 .req-steps strong { display: block; color: var(--cc); }
 .req-total { margin: 1.1em 0 0; padding: 10px 14px; background: var(--cc-soft); border-inline-start: 6px solid var(--cc); border-radius: var(--radius); font-weight: 800; font-size: 1.1rem; }
 @media (max-width: 560px) { .lb { padding: 56px 8px 70px; } .lb-img { max-width: calc(100vw - 16px); max-height: calc(100vh - 130px); } .lb-prev, .lb-next { top: auto; bottom: 10px; transform: none; } }
+
+/* חומרי למידה: קורס אוטוקאד */
+.vsearch { width: 100%; max-width: 420px; padding: .6em .9em; margin: .4em 0 .8em; border: 1px solid var(--line, #ccc); border-radius: 8px; font: inherit; background: #fff; }
+.vnav { display: flex; flex-wrap: wrap; gap: .4em; margin-bottom: 1.2em; }
+.vnav a { padding: .25em .7em; border: 1px solid var(--cc); border-radius: 999px; font-size: .85em; text-decoration: none; color: var(--cc); }
+.vnav a:hover { background: var(--cc); color: var(--on-cc, #fff); }
+.vgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1em; }
+.vcard { display: flex; flex-direction: column; gap: .3em; text-decoration: none; color: inherit; background: #fff; border: 1px solid var(--line, #ddd); border-top: 3px solid var(--cc); padding-bottom: .6em; }
+.vcard:hover { box-shadow: 0 4px 14px rgba(0,0,0,.12); }
+.vcard img { width: 100%; aspect-ratio: 16/9; object-fit: cover; background: #ddd; }
+.vcard .vt { font-weight: 700; padding: 0 .7em; }
+.vcard .vm { font-size: .82em; color: #666; padding: 0 .7em; }
+[hidden] { display: none !important; }
