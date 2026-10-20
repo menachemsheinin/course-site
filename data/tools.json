@@ -5,6 +5,7 @@
       "title": "תוכנות הקורס",
       "items": [
         { "name": "AutoCAD", "desc": "הורדה ורישיון סטודנט", "url": "https://www.autodesk.com/education/edu-software/overview" },
+        { "name": "תרגול AutoCAD ראשוני", "desc": "ממשק פשוט לתרגול אוטוקאד ראשוני", "url": "https://autocad-ariel.netlify.app/" },
         { "name": "Rhino", "desc": "מידול NURBS", "url": "https://www.rhino3d.com/" },
         { "name": "SketchUp Web", "desc": "מודלינג בדפדפן", "url": "https://app.sketchup.com/" }
       ]
