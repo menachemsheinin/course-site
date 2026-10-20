@@ -21,6 +21,11 @@
     .adm-login { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0; }
     .adm-login input { font: inherit; padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); color: var(--text); min-width: 240px; }
     .adm-msg { min-height: 1.4em; color: #b3261e; }
+    .adm-gal { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+    .adm-gal figure { margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+    .adm-gal img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+    .adm-gal figcaption { padding: 6px 8px; font-size: .85rem; line-height: 1.35; }
+    .adm-gal figcaption button { margin-top: 4px; }
     .adm-dates { display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); margin: 10px 0 18px; }
     .adm-dates div { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 6px 12px; font-size: .92rem; }
   </style>
@@ -39,6 +44,11 @@
       <p class="muted small" id="summary"></p>
       <div class="adm-dates" id="dates"></div>
       <div id="rows"></div>
+      <h2>גלריית התרגילים</h2>
+      <p class="muted small"><select id="gex" aria-label="תרגיל">
+        <option value="1">תרגיל 1</option><option value="2">תרגיל 2</option><option value="3">תרגיל 3</option><option value="4">תרגיל 4</option><option value="5">תרגיל 5</option>
+      </select> <span id="galsum"></span></p>
+      <div class="adm-gal" id="agal"></div>
     </div>
   </main>
   <script>
@@ -48,7 +58,8 @@
       let loading = false;
       let editing = null; // מזהה נושא שפתוח לו טופס עריכה
       const fmt = (iso) => new Date(iso + 'T00:00:00').toLocaleDateString('he-IL', { weekday: 'short', day: 'numeric', month: 'numeric' });
-      const post = (body) => fetch('/api/claims', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...body, adminKey: key }) })
+      // אותה פונקציה משמשת לשיבוץ ולגלריה: הכתובת נקבעת לפי הפעולה
+      const post = (body) => fetch(body.action === 'admin-delete' ? '/api/gallery' : '/api/claims', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...body, adminKey: key }) })
         .then(async (r) => ({ ok: r.ok, data: await r.json().catch(() => ({})) }));
       const ERR = { 'slot-full': 'התאריך מלא', slot: 'בחרו תאריך', team: 'שמות לא תקינים', admin: 'מפתח ניהול שגוי' };
 
@@ -70,6 +81,34 @@
           $('dates').replaceChildren(...slots.map((x) => { const d = document.createElement('div'); d.textContent = fmt(x.date) + ': ' + used(x.n) + ' מתוך ' + x.cap; return d; }));
           $('rows').replaceChildren(...topics.map((i) => row(i, claims[i.id], slots, used)));
         } finally { loading = false; }
+      }
+
+      // ניהול הגלריה: צפייה ומחיקה של תוצרים
+      async function loadGallery() {
+        const ex = $('gex').value;
+        let d;
+        try { d = await fetch('/api/gallery?ex=' + ex, { cache: 'no-store' }).then((r) => r.json()); } catch (e) { return; }
+        const items = d.items || [];
+        $('galsum').textContent = items.length + ' תוצרים';
+        $('agal').replaceChildren(...items.map((it) => {
+          const f = document.createElement('figure');
+          const a = document.createElement('a'); a.href = '/api/gallery/img/' + it.id + '/' + (it.pdf ? 'pdf' : 'full') + '?ex=' + ex; a.target = '_blank'; a.rel = 'noopener';
+          const img = document.createElement('img'); img.src = '/api/gallery/img/' + it.id + '/thumb?ex=' + ex; img.alt = it.name; img.loading = 'lazy';
+          a.append(img);
+          const c = document.createElement('figcaption');
+          const n = document.createElement('strong'); n.textContent = it.name + (it.pdf ? ' (PDF)' : '');
+          c.append(n);
+          if (it.caption) { const s = document.createElement('div'); s.textContent = it.caption; c.append(s); }
+          const b = document.createElement('button'); b.className = 'mini'; b.type = 'button'; b.textContent = 'מחק';
+          b.addEventListener('click', async () => {
+            if (!confirm('למחוק את התוצר של ״' + it.name + '״?')) return;
+            const r = await post({ action: 'admin-delete', id: it.id, ex: Number(ex) });
+            if (!r.ok) alert('המחיקה נכשלה'); else loadGallery();
+          });
+          c.append(b);
+          f.append(a, c);
+          return f;
+        }));
       }
 
       function row(i, cl, slots, used) {
@@ -119,7 +158,9 @@
         if (!r.ok) { $('msg').textContent = 'מפתח שגוי, או ש-ADMIN_KEY עדיין לא הוגדר ב-Netlify.'; return; }
         $('panel').hidden = false;
         load();
-        setInterval(() => { if (!document.hidden) load(); }, 10000);
+        loadGallery();
+        $('gex').addEventListener('change', loadGallery);
+        setInterval(() => { if (!document.hidden) { load(); loadGallery(); } }, 10000);
       });
     })();
   </script>

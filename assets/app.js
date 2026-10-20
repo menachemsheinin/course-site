@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const FILES = ['course', 'sessions', 'presentations', 'tools'];
+  const FILES = ['course', 'sessions', 'presentations', 'tools', 'exercises'];
   const D = {};
   const app = document.getElementById('app');
   const top = document.getElementById('top');
@@ -12,12 +12,12 @@
   const LETTER = { bg: 'א׳', app: 'ב׳' };
   const TABS = {
     bg: [['', 'סילבוס'], ['schedule', 'מפגשים'], ['presentations', 'פרזנטציות']],
-    app: [['', 'סילבוס'], ['schedule', 'מפגשים'], ['tools', 'כלים']],
+    app: [['', 'סילבוס'], ['schedule', 'מפגשים'], ['exercises', 'תרגילים'], ['tools', 'כלים']],
   };
   // כתובות ישנות
   const LEGACY = {
     background: '#/bg', practice: '#/app', presentations: '#/bg/presentations',
-    exercises: '#/app', schedule: '#/', tools: '#/app/tools',
+    exercises: '#/app/exercises', schedule: '#/', tools: '#/app/tools',
   };
 
   function h(tag, attrs, ...kids) {
@@ -429,6 +429,189 @@
 
   /* ---------- ניתוב ---------- */
 
+  /* ---------- גלריית תוצרי תרגיל 1 (קורס יישום): העלאה, רשת תמונות והגדלה ---------- */
+
+  const GALLERY_API = '/api/gallery';
+  const GALLERY_ERRORS = {
+    name: 'נא לרשום שם או שמות (2 עד 80 תווים).',
+    caption: 'הכיתוב ארוך מדי (עד 120 תווים).',
+    type: 'הקובץ אינו תמונה תקינה.',
+    size: 'התמונה גדולה מדי.',
+    dimensions: 'מידות התמונה אינן תקינות.',
+    full: 'הגלריה מלאה. פנו למרצה.',
+    limit: 'אפשר להעלות עד 3 תמונות. מחקו אחת כדי להחליף.',
+    code: 'הקוד שגוי.',
+    busy: 'השרת עמוס. נסו שוב בעוד רגע.',
+    'not-image': 'נא לבחור קובץ תמונה.',
+    decode: 'לא הצלחנו לקרוא את התמונה. נסו לשמור אותה כ-JPG או PNG.',
+    'too-big': 'התמונה כבדה מדי גם אחרי כיווץ. נסו תמונה קטנה יותר.',
+    'pdf-size': 'קובץ ה-PDF גדול מ-4MB. כווצו אותו ונסו שוב.',
+    pdf: 'לא הצלחנו לקרוא את קובץ ה-PDF. בדקו שהוא תקין.',
+    'pdf-lib': 'טעינת קורא ה-PDF נכשלה. נסו שוב.',
+  };
+  const EXERCISE_COUNT = 5;
+  async function galleryApi(method, body, ex) {
+    const opts = { method, cache: 'no-store', headers: { 'X-Token': myToken() } };
+    if (body instanceof FormData) { body.append('ex', ex); opts.body = body; }
+    else if (body) { opts.headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify({ ...body, ex }); }
+    const r = await fetch(GALLERY_API + (method === 'GET' ? '?ex=' + ex : ''), opts);
+    let data = null;
+    try { data = await r.json(); } catch (e) { /* תשובה ריקה */ }
+    return { ok: r.ok, status: r.status, data };
+  }
+
+  // חלון "דרישות התרגיל": התוכן מגיע מ-data/exercises.json
+  function openRequirements(n) {
+    const item = ((D.exercises || {}).items || []).find((x) => x.n === n) || {};
+    const reqs = item.requirements || [];
+    const hasDetails = !!(item.goal || item.deliverable || (item.steps || []).length || reqs.length || item.example);
+    const root = h('div', { class: 'modal', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'דרישות תרגיל ' + n });
+    const shut = () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = prev; root.remove(); };
+    const onKey = (e) => { if (e.key === 'Escape' && !document.querySelector('.lb')) shut(); }; // Esc סוגר קודם את ההגדלה
+    const prev = document.body.style.overflow;
+    root.append(h('div', { class: 'modal-card' },
+      h('button', { class: 'modal-x', type: 'button', 'aria-label': 'סגירה', onclick: shut }, '✕'),
+      h('h2', {}, 'דרישות תרגיל ' + n),
+      item.title ? h('p', { class: 'req-title' }, item.title) : null,
+      item.goal ? h('div', { class: 'req-block' }, h('h3', {}, 'מטרת התרגיל'), h('p', {}, item.goal)) : null,
+      item.deliverable ? h('div', { class: 'req-block' }, h('h3', {}, 'תוצר סופי'), h('p', {}, item.deliverable)) : null,
+      (item.steps || []).length
+        ? h('div', { class: 'req-block' }, h('h3', {}, 'מהלך התרגיל'),
+          h('ol', { class: 'req-steps' }, item.steps.map((s) => h('li', {}, h('strong', {}, s.title), h('span', {}, s.text)))))
+        : null,
+      item.total ? h('p', { class: 'req-total' }, item.total) : null,
+      item.example
+        ? h('div', { class: 'req-block' }, h('h3', {}, 'דוגמה'),
+          h('button', { class: 'req-example', type: 'button', 'aria-label': 'הגדלת הדוגמה', onclick: () => GalleryTools.openLightbox([{ src: item.example.src, title: 'דוגמה לתרגיל ' + n, caption: item.example.caption }], 0) },
+            h('img', { src: item.example.src, alt: item.example.caption || 'דוגמה' })),
+          item.example.caption ? h('p', { class: 'small muted', style: 'margin-top:.4em' }, item.example.caption + ' · לחצו להגדלה') : null)
+        : null,
+      reqs.length ? h('ul', { class: 'clean' }, reqs.map((r) => h('li', {}, r))) : null,
+      !hasDetails ? h('p', { class: 'muted' }, 'דרישות התרגיל יימסרו בהמשך.') : null,
+      ...(item.links || []).map((l) => h('p', {}, link(l.title, l.url)))));
+    root.addEventListener('click', (e) => { if (e.target === root) shut(); });
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    document.body.append(root);
+  }
+
+  const REQ_ICON = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4h6a1 1 0 0 1 1 1v1H8V5a1 1 0 0 1 1-1z"/><path d="M8 6H6a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1h-2"/><path d="M9 12h6M9 16h4"/></svg>';
+
+  // עמוד "תרגילים": לשונית לכל תרגיל (1-5) עם דרישות, העלאה וגלריה
+  function exercises(k, sub) {
+    const ex = Math.min(EXERCISE_COUNT, Math.max(1, parseInt(sub, 10) || 1));
+    let items = [];
+    let live = null; // null: טוען · true: זמין · false: לא זמין
+    let busy = false;
+    const grid = h('div', { class: 'gal' });
+    const info = h('p', { class: 'muted small' });
+    const imgUrl = (id, size) => GALLERY_API + '/img/' + id + '/' + size + '?ex=' + ex;
+
+    const subtabs = h('nav', { class: 'subtabs', 'aria-label': 'תרגילים' },
+      Array.from({ length: EXERCISE_COUNT }, (_, i) => h('a', { href: '#/app/exercises/' + (i + 1), class: i + 1 === ex ? 'on' : '' }, 'תרגיל ' + (i + 1))));
+    const reqIco = h('span', { class: 'req-ico' });
+    reqIco.innerHTML = REQ_ICON;
+    const reqBtn = h('button', { class: 'req-btn', type: 'button', onclick: () => openRequirements(ex) }, reqIco, 'דרישות התרגיל');
+
+    // ---- טופס העלאה ----
+    const file = h('input', { type: 'file', accept: 'image/*,application/pdf,.pdf', 'aria-label': 'בחירת קובץ' });
+    const names = h('input', { type: 'text', maxlength: 80, placeholder: 'שם או שמות', 'aria-label': 'שם או שמות', value: mem.get('galName') });
+    const caption = h('input', { type: 'text', maxlength: 120, placeholder: 'כיתוב קצר (לא חובה)', 'aria-label': 'כיתוב' });
+    const code = h('input', { type: 'text', maxlength: 20, placeholder: 'קוד כיתה', 'aria-label': 'קוד כיתה', style: 'max-width:9em', hidden: true });
+    const preview = h('img', { class: 'upl-prev', alt: '', hidden: true });
+    const msg = h('div', { class: 'upl-msg', role: 'status' });
+    const send = h('button', { class: 'btn', type: 'button' }, 'העלאה');
+    const form = h('div', { class: 'upl' },
+      h('h2', {}, 'העלאת התרגיל'),
+      h('p', { class: 'muted small', style: 'margin-top:0' }, 'הגיליון להגשה: PDF (עד 4MB) או תמונה JPG/PNG, ושם. בגלריה יוצג העמוד הראשון.'),
+      h('div', { class: 'upl-row' }, file, preview),
+      h('div', { class: 'upl-row' }, names, caption, code, send),
+      msg);
+    form.hidden = true;
+
+    let previewUrl = '';
+    file.addEventListener('change', () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      const f = file.files[0];
+      const pdf = GalleryTools.isPdfFile(f);
+      previewUrl = f && !pdf ? URL.createObjectURL(f) : '';
+      preview.src = previewUrl;
+      preview.hidden = !f || pdf;
+      msg.className = 'upl-msg';
+      msg.textContent = pdf ? 'קובץ PDF: העמוד הראשון יוצג בגלריה, והקובץ המלא יהיה זמין להורדה.' : '';
+      if (pdf) msg.className = 'upl-msg info';
+    });
+
+    async function submit() {
+      if (busy) return;
+      const f = file.files[0];
+      const nm = names.value.trim();
+      msg.className = 'upl-msg';
+      if (!f) { msg.textContent = GALLERY_ERRORS['not-image']; return; }
+      if (nm.length < 2) { msg.textContent = GALLERY_ERRORS.name; return; }
+      busy = true; send.disabled = true; msg.textContent = 'מכווץ ומעלה…';
+      try {
+        const p = await GalleryTools.prepare(f);
+        const fd = new FormData();
+        fd.append('name', nm); fd.append('caption', caption.value.trim());
+        fd.append('w', p.w); fd.append('h', p.h);
+        if (code.value.trim()) fd.append('code', code.value.trim());
+        fd.append('full', p.full, 'full.jpg'); fd.append('thumb', p.thumb, 'thumb.jpg');
+        if (p.pdf) fd.append('pdf', p.pdf, 'exercise.pdf');
+        const r = await galleryApi('POST', fd, ex);
+        if (r.ok) {
+          mem.set('galName', nm);
+          file.value = ''; caption.value = ''; preview.hidden = true;
+          msg.className = 'upl-msg ok'; msg.textContent = 'התמונה הועלתה ומוצגת בגלריה.';
+          await refresh();
+        } else {
+          const e = (r.data || {}).error;
+          if (e === 'code') code.hidden = false;
+          msg.textContent = GALLERY_ERRORS[e] || (r.status === 413 ? GALLERY_ERRORS.size : 'ההעלאה נכשלה. נסו שוב.');
+        }
+      } catch (e) {
+        msg.textContent = GALLERY_ERRORS[e.message] || 'ההעלאה נכשלה. נסו שוב.';
+      }
+      busy = false; send.disabled = false;
+    }
+    send.addEventListener('click', submit);
+
+    // ---- גלריה ----
+    function draw() {
+      form.hidden = !live;
+      info.textContent = live === false ? 'הגלריה לא זמינה כרגע.' : live && items.length ? items.length + ' תוצרים · לחצו על תמונה להגדלה' : '';
+      const lb = items.map((it) => (it.pdf
+        ? { src: imgUrl(it.id, 'full'), title: it.name, caption: it.caption, openUrl: imgUrl(it.id, 'pdf'), openLabel: 'פתיחת ה-PDF המלא' }
+        : { src: imgUrl(it.id, 'full'), title: it.name, caption: it.caption, openUrl: imgUrl(it.id, 'full') }));
+      grid.replaceChildren(...(live && !items.length
+        ? [h('p', { class: 'muted' }, 'עדיין לא הועלו תוצרים. אפשר להיות הראשונים.')]
+        : items.map((it, i) =>
+          h('figure', { class: 'gal-item' },
+            h('button', { class: 'gal-btn', type: 'button', 'aria-label': 'הגדלה: ' + it.name, onclick: () => GalleryTools.openLightbox(lb, i) },
+              h('img', { src: imgUrl(it.id, 'thumb'), alt: it.name + (it.caption ? ': ' + it.caption : ''), loading: 'lazy', width: it.w, height: it.h }),
+              it.pdf ? h('span', { class: 'pdf-badge' }, 'PDF') : null),
+            h('figcaption', {}, h('strong', {}, it.name), it.caption ? h('span', {}, it.caption) : null,
+              it.mine ? h('button', { class: 'mini', type: 'button', onclick: () => remove(it) }, 'מחיקה') : null)))));
+    }
+    async function remove(it) {
+      if (!confirm('למחוק את התוצר של ״' + it.name + '״?')) return;
+      try { await galleryApi('POST', { action: 'delete', id: it.id }, ex); } catch (e) { /* ייטען מחדש */ }
+      await refresh();
+    }
+    async function refresh() {
+      try {
+        const r = await galleryApi('GET', null, ex);
+        if (r.ok && r.data && Array.isArray(r.data.items)) { items = r.data.items; live = true; } else live = false;
+      } catch (e) { if (live === null) live = false; }
+      draw();
+    }
+
+    stopPolling();
+    refresh().then(() => { if (live) pollTimer = setInterval(() => { if (!document.hidden) refresh(); }, 30000); });
+    const exTitle = (((D.exercises || {}).items || []).find((x) => x.n === ex) || {}).title;
+    return [subtabs, h('div', { class: 'ex-head' }, h('h1', {}, 'תרגיל ' + ex), reqBtn), exTitle ? h('p', { class: 'ex-title' }, exTitle) : null, info, form, grid];
+  }
+
   /* ---------- הנחיות לתרגיל הפרזנטציה (קורס רקע) ---------- */
 
   function guide() {
@@ -453,7 +636,7 @@
 
   const PAGES = {
     bg: { '': courseHome, schedule, presentations, guide },
-    app: { '': courseHome, schedule, tools },
+    app: { '': courseHome, schedule, exercises, tools },
   };
 
   function render() {
@@ -462,6 +645,7 @@
 
     stopPolling();
     const k = KEYS.includes(parts[0]) ? parts[0] : null;
+    if (k === 'app' && parts[1] === 'gallery') { location.replace('#/app/exercises/1'); return; }
     let page = k ? parts[1] || '' : '';
     if (k && !(page in PAGES[k])) page = '';
 
@@ -470,7 +654,7 @@
     const tabPage = page === 'guide' ? 'presentations' : page;
     header(k, tabPage);
     const view = k ? PAGES[k][page] : home;
-    app.replaceChildren(...view(k).filter(Boolean));
+    app.replaceChildren(...view(k, parts[2]).filter(Boolean));
 
     const tab = k && TABS[k].find(([p]) => p === tabPage);
     document.title = (k ? LABEL[k] + (page ? ' · ' + (page === 'guide' ? 'הנחיות' : tab[1]) : '') + ' · ' : '') + D.course.title;
