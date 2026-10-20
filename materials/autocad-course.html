@@ -1,0 +1,1859 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>סרטוני הדרכה לתחילת עבודה בתוכנת AutoCAD</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #E50914;
+            --secondary-color: #1a1a1a;
+            --accent-color: #f5f5f5;
+            --hover-color: #ff1a1f;
+            --text-dark: #2c2c2c;
+            --text-light: #666;
+            --border-light: #e0e0e0;
+            --shadow-soft: 0 2px 15px rgba(0,0,0,0.08);
+            --shadow-hover: 0 8px 30px rgba(229, 9, 20, 0.15);
+        }
+
+        body {
+            font-family: 'Rubik', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* רקע גאומטרי בהשראת Rhino */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(60deg, rgba(229, 9, 20, 0.03) 25%, transparent 25%, transparent 75%, rgba(229, 9, 20, 0.03) 75%),
+                linear-gradient(120deg, rgba(229, 9, 20, 0.03) 25%, transparent 25%, transparent 75%, rgba(229, 9, 20, 0.03) 75%);
+            background-size: 50px 50px;
+            background-position: 0 0, 25px 25px;
+            z-index: -1;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 25px 40px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            line-height: 1.3;
+        }
+
+        .rhino-logo {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-color);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(229, 9, 20, 0.3);
+        }
+
+        .subtitle {
+            color: var(--text-light);
+            font-size: 1.05rem;
+            font-weight: 500;
+            margin-top: 8px;
+            background: linear-gradient(90deg, var(--primary-color), #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Info Banner */
+        .info-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 25px;
+            margin: 20px 0;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .info-banner svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        /* Search Bar */
+        .search-container {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            border: 2px solid var(--border-light);
+            border-radius: 50px;
+            font-size: 1rem;
+            font-family: 'Rubik', sans-serif;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.1);
+        }
+
+        .search-button {
+            position: absolute;
+            left: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary-color);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .search-button:hover {
+            background: var(--hover-color);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        /* Category Section */
+        .category-section {
+            margin-bottom: 60px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--primary-color);
+            display: inline-block;
+        }
+
+        /* Grid Layout */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        /* Video Card */
+        .video-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            display: block;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(0,0,0,0.05);
+            text-decoration: none;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--primary-color);
+        }
+
+        .video-thumbnail {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            background: linear-gradient(135deg, #f0f0f0 0%, #d0d0d0 100%);
+            overflow: hidden;
+        }
+
+        .video-thumbnail img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .video-card:hover .video-thumbnail img {
+            transform: scale(1.1);
+        }
+
+        .youtube-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 0, 0, 0.9);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            backdrop-filter: blur(10px);
+        }
+
+        .youtube-badge svg {
+            width: 16px;
+            height: 16px;
+            fill: white;
+        }
+
+        .play-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: rgba(229, 9, 20, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .video-card:hover .play-overlay {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .play-overlay::after {
+            content: '';
+            width: 0;
+            height: 0;
+            border-left: 20px solid white;
+            border-top: 12px solid transparent;
+            border-bottom: 12px solid transparent;
+            margin-left: 4px;
+        }
+
+        .video-info {
+            padding: 20px;
+        }
+
+        .video-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .video-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            flex-wrap: wrap;
+        }
+
+        .video-duration {
+            background: rgba(0, 0, 0, 0.05);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 500;
+            color: var(--text-dark);
+            font-size: 0.85rem;
+        }
+
+        .difficulty-badge {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .difficulty-badge.intermediate {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .video-description {
+            font-size: 0.85rem;
+            line-height: 1.4;
+            flex: 1;
+        }
+
+        /* Separator */
+        .separator {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+            margin: 50px 0;
+            position: relative;
+        }
+
+        .separator::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            background: white;
+            border: 2px solid var(--primary-color);
+            border-radius: 50%;
+        }
+
+        /* Statistics Bar */
+        .stats-bar {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-banner {
+                font-size: 0.9rem;
+                flex-direction: column;
+            }
+        }
+
+        /* Category Nav - כל הקטגוריות גלויות בשורות */
+        .header {
+            position: static;
+        }
+
+        .category-nav {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .category-nav a {
+            padding: 6px 14px;
+            border-radius: 50px;
+            border: 2px solid var(--border-light);
+            background: white;
+            color: var(--text-dark);
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        .category-nav a:hover {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(229, 9, 20, 0.3);
+        }
+
+        .category-section {
+            scroll-margin-top: 20px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .back-to-menu {
+            position: fixed;
+            bottom: 25px;
+            left: 25px;
+            z-index: 200;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            font-family: 'Rubik', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+
+        .back-to-menu.visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        .back-to-menu:hover {
+            background: var(--hover-color);
+        }
+        </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div>
+                    <h1>
+                        <div class="rhino-logo">A</div>
+                        סרטוני הדרכה לתחילת עבודה בתוכנת AutoCAD
+                    </h1>
+                    <p class="subtitle">אדריכל מנחם שיינין</p>
+                </div>
+            </div>
+            <div class="search-container">
+                <input type="text" class="search-box" placeholder="חיפוש סרטונים, נושאים או טכניקות..." id="searchBox">
+                <button class="search-button" onclick="performSearch()">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 20px; height: 20px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </button>
+            </div>
+            <nav class="category-nav" id="categoryNav">
+                <a href="#cat-0">🚀 ממשק והכרת סביבת העבודה</a>
+                <a href="#cat-1">✏️ פקודות שרטוט בסיסיות</a>
+                <a href="#cat-2">✂️ פקודות עריכה</a>
+                <a href="#cat-3">🧱 שכבות (Layers)</a>
+                <a href="#cat-4">🧩 בלוקים (Blocks)</a>
+                <a href="#cat-5">📐 מידות (Dimensions)</a>
+                <a href="#cat-6">🎨 האטצ'ים (Hatch)</a>
+                <a href="#cat-7">🧭 קואורדינטות ו-UCS</a>
+                <a href="#cat-8">🖨️ Layout, קנה מידה והדפסה</a>
+                <a href="#cat-9">🖋️ CTB - עובי וצבע קווים</a>
+                <a href="#cat-10">🏗️ חתכים ותוכניות גגות</a>
+                <a href="#cat-11">💻 אוטומציה</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Info Banner -->
+        <div class="info-banner">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+            </svg>
+            <span>לחץ על כרטיס סרטון כדי לצפות בו ב-YouTube</span>
+        </div>
+
+        <!-- Statistics Bar -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-number">54</div>
+                <div class="stat-label">סרטוני הדרכה</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">12</div>
+                <div class="stat-label">קטגוריות</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">6+</div>
+                <div class="stat-label">שעות תוכן</div>
+            </div>
+        </div>
+
+        <section class="category-section" id="cat-0">
+            <h2 class="section-title">🚀 ממשק והכרת סביבת העבודה</h2>
+            <div class="video-grid">
+                <a href="https://www.youtube.com/watch?v=IhDlEukADPI" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/IhDlEukADPI/maxresdefault.jpg" alt="שמירת קובץ ויחידות" onerror="this.src='https://img.youtube.com/vi/IhDlEukADPI/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">שמירת קובץ ויחידות</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">4:21</span>
+                            <span class="difficulty-badge">מתחילים</span>
+                            <span class="video-description">הגדרת יחידות מידה ושמירה נכונה</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=Nz7efIVuUdQ" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/Nz7efIVuUdQ/maxresdefault.jpg" alt="Selection - בחירת אובייקטים" onerror="this.src='https://img.youtube.com/vi/Nz7efIVuUdQ/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">Selection - בחירת אובייקטים</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">4:06</span>
+                            <span class="difficulty-badge">מתחילים</span>
+                            <span class="video-description">שיטות בחירה בחלון השרטוט</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=HVdDskrbOVY" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/HVdDskrbOVY/maxresdefault.jpg" alt="Dynamic Input - הזנה דינמית" onerror="this.src='https://img.youtube.com/vi/HVdDskrbOVY/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">Dynamic Input - הזנה דינמית</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">0:45</span>
+                            <span class="difficulty-badge">מתחילים</span>
+                            <span class="video-description">הזנת מידות וזוויות ליד הסמן</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=sD4KuxxM4_U" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/sD4KuxxM4_U/maxresdefault.jpg" alt="Snaps - נקודות הצמדה" onerror="this.src='https://img.youtube.com/vi/sD4KuxxM4_U/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">Snaps - נקודות הצמדה</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">6:45</span>
+                            <span class="difficulty-badge">מתחילים</span>
+                            <span class="video-description">שרטוט מדויק בעזרת Object Snap</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=rrjNHBDYsWU" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/rrjNHBDYsWU/maxresdefault.jpg" alt="Properties Menu - תפריט מאפיינים" onerror="this.src='https://img.youtube.com/vi/rrjNHBDYsWU/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">Properties Menu - תפריט מאפיינים</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">4:04</span>
+                            <span class="difficulty-badge">מתחילים</span>
+                            <span class="video-description">צפייה ועריכה של מאפייני אובייקט</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- מפריד -->
+        <div class="separator"></div>
+
+        <section class="category-section" id="cat-1">
+            <h2 class="section-title">✏️ פקודות שרטוט בסיסיות</h2>
+            <div class="video-grid">
+                <a href="https://www.youtube.com/watch?v=LiT8e3xdEZU" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/LiT8e3xdEZU/maxresdefault.jpg" alt="Polyline - קו מורכב" onerror="this.src='https://img.youtube.com/vi/LiT8e3xdEZU/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">Polyline - קו מורכב</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">2:10</span>
+                            <span class="difficulty-badge">מתחילים</span>
+                            <span class="video-description">שרטוט קו רציף מכמה קטעים</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=Jwr0ybfHna4" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/Jwr0ybfHna4/maxresdefault.jpg" alt="Rectangle - מלבן" onerror="this.src='https://img.youtube.com/vi/Jwr0ybfHna4/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">Rectangle - מלבן</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">3:11</span>
+                            <span class="difficulty-badge">מתחילים</span>
+                            <span class="video-description">שרטוט מלבנים</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=UMTnqOlkh8M" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/UMTnqOlkh8M/maxresdefault.jpg" alt="Circle - עיגול" onerror="this.src='https://img.youtube.com/vi/UMTnqOlkh8M/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">Circle - עיגול</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">3:03</span>
+                            <span class="difficulty-badge">מתחילים</span>
+                            <span class="video-description">דרכים שונות לשרטוט עיגול</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- מפריד -->
+        <div class="separator"></div>
+
+        <section class="category-section" id="cat-2">
+            <h2 class="section-title">✂️ פקודות עריכה</h2>
+            <div class="video-grid">
+                <a href="https://www.youtube.com/watch?v=gApQ86Tyzu8" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/gApQ86Tyzu8/maxresdefault.jpg" alt="Copy - העתקה" onerror="this.src='https://img.youtube.com/vi/gApQ86Tyzu8/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">Copy - העתקה</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">2:39</span>
+                            <span class="difficulty-badge">מתחילים</span>
+                            <span class="video-description">שכפול אובייקטים</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=ZjLBW2-VY5M" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/ZjLBW2-VY5M/maxresdefault.jpg" alt="Move - הזזה" onerror="this.src='https://img.youtube.com/vi/ZjLBW2-VY5M/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">Move - הזזה</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">3:41</span>
+                            <span class="difficulty-badge">מתחילים</span>
+                            <span class="video-description">העברת אובייקטים ממקום למקום</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=FGSvIh0JOq4" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/FGSvIh0JOq4/maxresdefault.jpg" alt="Mirror - שיקוף" onerror="this.src='https://img.youtube.com/vi/FGSvIh0JOq4/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">Mirror - שיקוף</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">3:10</span>
+                            <span class="difficulty-badge">מתחילים</span>
+                            <span class="video-description">יצירת תמונת מראה</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=eTLjk-m2gwM" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/eTLjk-m2gwM/maxresdefault.jpg" alt="Rotate - סיבוב" onerror="this.src='https://img.youtube.com/vi/eTLjk-m2gwM/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">Rotate - סיבוב</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">3:50</span>
+                            <span class="difficulty-badge">מתחילים</span>
+                            <span class="video-description">סיבוב אובייקטים סביב נקודה</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=9NrJSPYXXHg" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/9NrJSPYXXHg/maxresdefault.jpg" alt="Scale - שינוי קנה מידה" onerror="this.src='https://img.youtube.com/vi/9NrJSPYXXHg/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">Scale - שינוי קנה מידה</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">4:08</span>
+                            <span class="difficulty-badge">מתחילים</span>
+                            <span class="video-description">הגדלה והקטנה של אובייקטים</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=sGUMrKgrLwk" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/sGUMrKgrLwk/maxresdefault.jpg" alt="Offset - היסט" onerror="this.src='https://img.youtube.com/vi/sGUMrKgrLwk/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">Offset - היסט</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">5:12</span>
+                            <span class="difficulty-badge">מתחילים</span>
+                            <span class="video-description">יצירת עותק מקביל במרחק נתון</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=7fM272zXF14" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/7fM272zXF14/maxresdefault.jpg" alt="Trim - גיזום" onerror="this.src='https://img.youtube.com/vi/7fM272zXF14/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">Trim - גיזום</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">4:27</span>
+                            <span class="difficulty-badge">מתחילים</span>
+                            <span class="video-description">חיתוך קווים בנקודות חיתוך</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=KwYpGlyjYBk" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/KwYpGlyjYBk/maxresdefault.jpg" alt="Extend - הארכה" onerror="this.src='https://img.youtube.com/vi/KwYpGlyjYBk/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">Extend - הארכה</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">2:22</span>
+                            <span class="difficulty-badge">מתחילים</span>
+                            <span class="video-description">הארכת קווים עד אובייקט גבול</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=hHnPENPx3Uk" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/hHnPENPx3Uk/maxresdefault.jpg" alt="Match - העתקת מאפיינים" onerror="this.src='https://img.youtube.com/vi/hHnPENPx3Uk/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">Match - העתקת מאפיינים</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">1:47</span>
+                            <span class="difficulty-badge">מתחילים</span>
+                            <span class="video-description">העברת מאפיינים בין אובייקטים</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=MzgdVuCElFk" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/MzgdVuCElFk/maxresdefault.jpg" alt="Fillet - עיגול פינות" onerror="this.src='https://img.youtube.com/vi/MzgdVuCElFk/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">Fillet - עיגול פינות</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">6:04</span>
+                            <span class="difficulty-badge">מתחילים</span>
+                            <span class="video-description">עיגול פינה בין שני קווים</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=5hHX3F6OjHw" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/5hHX3F6OjHw/maxresdefault.jpg" alt="Chamfer - שיפוע פינות" onerror="this.src='https://img.youtube.com/vi/5hHX3F6OjHw/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">Chamfer - שיפוע פינות</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">3:52</span>
+                            <span class="difficulty-badge">מתחילים</span>
+                            <span class="video-description">חיתוך פינה בזווית</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=FvimP2mh9Do" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/FvimP2mh9Do/maxresdefault.jpg" alt="Line Grips - ידיות עריכה" onerror="this.src='https://img.youtube.com/vi/FvimP2mh9Do/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">Line Grips - ידיות עריכה</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">1:29</span>
+                            <span class="difficulty-badge">מתחילים</span>
+                            <span class="video-description">עריכת קווים בעזרת ידיות</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- מפריד -->
+        <div class="separator"></div>
+
+        <section class="category-section" id="cat-3">
+            <h2 class="section-title">🧱 שכבות (Layers)</h2>
+            <div class="video-grid">
+                <a href="https://www.youtube.com/watch?v=wpvGBq4i_1c" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/wpvGBq4i_1c/maxresdefault.jpg" alt="שכבות - מבוא" onerror="this.src='https://img.youtube.com/vi/wpvGBq4i_1c/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">שכבות - מבוא</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">6:10</span>
+                            <span class="difficulty-badge">מתחילים</span>
+                            <span class="video-description">מהן שכבות ולמה משתמשים בהן</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=2p8tU-Fe-Ps" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/2p8tU-Fe-Ps/maxresdefault.jpg" alt="יצירת שכבה חדשה" onerror="this.src='https://img.youtube.com/vi/2p8tU-Fe-Ps/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">יצירת שכבה חדשה</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">10:45</span>
+                            <span class="difficulty-badge">מתחילים</span>
+                            <span class="video-description">הגדרת שם, צבע וסוג קו</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=yEd4PRbORUA" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/yEd4PRbORUA/maxresdefault.jpg" alt="שכבות - שליטה מתקדמת" onerror="this.src='https://img.youtube.com/vi/yEd4PRbORUA/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">שכבות - שליטה מתקדמת</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">2:17</span>
+                            <span class="difficulty-badge intermediate">בינוני</span>
+                            <span class="video-description">ניהול ושליטה בשכבות</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=KWrHAhqjbbI" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/KWrHAhqjbbI/maxresdefault.jpg" alt="שכבות ב-Viewport" onerror="this.src='https://img.youtube.com/vi/KWrHAhqjbbI/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">שכבות ב-Viewport</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">4:27</span>
+                            <span class="difficulty-badge intermediate">בינוני</span>
+                            <span class="video-description">שליטה בנראות שכבות לפי חלון תצוגה</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- מפריד -->
+        <div class="separator"></div>
+
+        <section class="category-section" id="cat-4">
+            <h2 class="section-title">🧩 בלוקים (Blocks)</h2>
+            <div class="video-grid">
+                <a href="https://www.youtube.com/watch?v=gbEXCuK3YJo" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/gbEXCuK3YJo/maxresdefault.jpg" alt="בלוקים 1 - מהו בלוק" onerror="this.src='https://img.youtube.com/vi/gbEXCuK3YJo/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">בלוקים 1 - מהו בלוק</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">9:55</span>
+                            <span class="difficulty-badge">מתחילים</span>
+                            <span class="video-description">הכרת מושג הבלוק</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=GhaUPPILtEk" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/GhaUPPILtEk/maxresdefault.jpg" alt="בלוקים 2 - יצירת בלוק פשוט" onerror="this.src='https://img.youtube.com/vi/GhaUPPILtEk/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">בלוקים 2 - יצירת בלוק פשוט</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">0:38</span>
+                            <span class="difficulty-badge">מתחילים</span>
+                            <span class="video-description">יצירת בלוק ראשון</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=TY8AUNnXuo0" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/TY8AUNnXuo0/maxresdefault.jpg" alt="בלוקים 3 - עריכה של בלוק" onerror="this.src='https://img.youtube.com/vi/TY8AUNnXuo0/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">בלוקים 3 - עריכה של בלוק</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">7:03</span>
+                            <span class="difficulty-badge intermediate">בינוני</span>
+                            <span class="video-description">עריכת בלוק קיים</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=WkLJCSPfvDg" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/WkLJCSPfvDg/maxresdefault.jpg" alt="בלוקים 4 - שכבות בבלוקים" onerror="this.src='https://img.youtube.com/vi/WkLJCSPfvDg/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">בלוקים 4 - שכבות בבלוקים</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">3:20</span>
+                            <span class="difficulty-badge intermediate">בינוני</span>
+                            <span class="video-description">התנהגות שכבות בתוך בלוקים</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=QGozk4PyFjw" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/QGozk4PyFjw/maxresdefault.jpg" alt="בלוקים 5 - פיצוץ בלוק" onerror="this.src='https://img.youtube.com/vi/QGozk4PyFjw/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">בלוקים 5 - פיצוץ בלוק</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">1:46</span>
+                            <span class="difficulty-badge intermediate">בינוני</span>
+                            <span class="video-description">פירוק בלוק לאובייקטים</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=D_Zj_V-VGF0" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/D_Zj_V-VGF0/maxresdefault.jpg" alt="בלוק דינאמי" onerror="this.src='https://img.youtube.com/vi/D_Zj_V-VGF0/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">בלוק דינאמי</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">9:06</span>
+                            <span class="difficulty-badge intermediate">בינוני</span>
+                            <span class="video-description">בלוקים עם פרמטרים לשינוי</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- מפריד -->
+        <div class="separator"></div>
+
+        <section class="category-section" id="cat-5">
+            <h2 class="section-title">📐 מידות (Dimensions)</h2>
+            <div class="video-grid">
+                <a href="https://www.youtube.com/watch?v=uS0wf7RdVfo" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/uS0wf7RdVfo/maxresdefault.jpg" alt="מידות - הקדמה" onerror="this.src='https://img.youtube.com/vi/uS0wf7RdVfo/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">מידות - הקדמה</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">4:45</span>
+                            <span class="difficulty-badge">מתחילים</span>
+                            <span class="video-description">מבוא לעבודה עם מידות</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=K8iV2JfgYVg" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/K8iV2JfgYVg/maxresdefault.jpg" alt="שליטה על מידות" onerror="this.src='https://img.youtube.com/vi/K8iV2JfgYVg/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">שליטה על מידות</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">5:28</span>
+                            <span class="difficulty-badge">מתחילים</span>
+                            <span class="video-description">עריכת מידות קיימות</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=DWKL0PoDo2E" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/DWKL0PoDo2E/maxresdefault.jpg" alt="סגנונות של מידות - מבוא" onerror="this.src='https://img.youtube.com/vi/DWKL0PoDo2E/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">סגנונות של מידות - מבוא</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">7:59</span>
+                            <span class="difficulty-badge intermediate">בינוני</span>
+                            <span class="video-description">הכרת סגנונות המידה</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=AjyR9U1_Bbw" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/AjyR9U1_Bbw/maxresdefault.jpg" alt="הגדרת סגנון מידה" onerror="this.src='https://img.youtube.com/vi/AjyR9U1_Bbw/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">הגדרת סגנון מידה</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">15:32</span>
+                            <span class="difficulty-badge intermediate">בינוני</span>
+                            <span class="video-description">יצירת סגנון מידה מותאם</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- מפריד -->
+        <div class="separator"></div>
+
+        <section class="category-section" id="cat-6">
+            <h2 class="section-title">🎨 האטצ'ים (Hatch)</h2>
+            <div class="video-grid">
+                <a href="https://www.youtube.com/watch?v=T_bAGojscZw" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/T_bAGojscZw/maxresdefault.jpg" alt="מבוא להאטץ'" onerror="this.src='https://img.youtube.com/vi/T_bAGojscZw/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">מבוא להאטץ'</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">7:44</span>
+                            <span class="difficulty-badge">מתחילים</span>
+                            <span class="video-description">מילוי שטחים בתבניות</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=EpCXxy_vNmY" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/EpCXxy_vNmY/maxresdefault.jpg" alt="האטצ'ים" onerror="this.src='https://img.youtube.com/vi/EpCXxy_vNmY/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">האטצ'ים</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">14:20</span>
+                            <span class="difficulty-badge intermediate">בינוני</span>
+                            <span class="video-description">סוגי האטץ' והגדרותיהם</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=-Px7_QCwcX8" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/-Px7_QCwcX8/maxresdefault.jpg" alt="עבודה נקייה עם האטצ'ים" onerror="this.src='https://img.youtube.com/vi/-Px7_QCwcX8/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">עבודה נקייה עם האטצ'ים</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">23:39</span>
+                            <span class="difficulty-badge intermediate">בינוני</span>
+                            <span class="video-description">שליטה ופתרון בעיות נפוצות</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- מפריד -->
+        <div class="separator"></div>
+
+        <section class="category-section" id="cat-7">
+            <h2 class="section-title">🧭 קואורדינטות ו-UCS</h2>
+            <div class="video-grid">
+                <a href="https://www.youtube.com/watch?v=qxWAQUq6o9k" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/qxWAQUq6o9k/maxresdefault.jpg" alt="קואורדינטות" onerror="this.src='https://img.youtube.com/vi/qxWAQUq6o9k/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">קואורדינטות</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">14:37</span>
+                            <span class="difficulty-badge intermediate">בינוני</span>
+                            <span class="video-description">הזנת נקודות בקואורדינטות מוחלטות ויחסיות</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=CWtoBrNj2sA" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/CWtoBrNj2sA/maxresdefault.jpg" alt="UCS - מערכת צירים" onerror="this.src='https://img.youtube.com/vi/CWtoBrNj2sA/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">UCS - מערכת צירים</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">6:02</span>
+                            <span class="difficulty-badge intermediate">בינוני</span>
+                            <span class="video-description">הגדרת מערכת צירים מותאמת</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- מפריד -->
+        <div class="separator"></div>
+
+        <section class="category-section" id="cat-8">
+            <h2 class="section-title">🖨️ Layout, קנה מידה והדפסה</h2>
+            <div class="video-grid">
+                <a href="https://www.youtube.com/watch?v=bOrzmAyhC94" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/bOrzmAyhC94/maxresdefault.jpg" alt="ייבוא תמונה והתאמת קנ&quot;מ" onerror="this.src='https://img.youtube.com/vi/bOrzmAyhC94/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">ייבוא תמונה והתאמת קנ&quot;מ</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">8:08</span>
+                            <span class="difficulty-badge">מתחילים</span>
+                            <span class="video-description">הכנסת תמונה והתאמתה למידה אמיתית</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=_O0lvbydQtM" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/_O0lvbydQtM/maxresdefault.jpg" alt="יצירת Layout חדש" onerror="this.src='https://img.youtube.com/vi/_O0lvbydQtM/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">יצירת Layout חדש</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">3:15</span>
+                            <span class="difficulty-badge">מתחילים</span>
+                            <span class="video-description">פתיחת גיליון הדפסה</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=i26uN6WFO94" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/i26uN6WFO94/maxresdefault.jpg" alt="Viewports - חלונות תצוגה" onerror="this.src='https://img.youtube.com/vi/i26uN6WFO94/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">Viewports - חלונות תצוגה</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">5:43</span>
+                            <span class="difficulty-badge intermediate">בינוני</span>
+                            <span class="video-description">הצגת השרטוט בקנה מידה בגיליון</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=urO1bvlkN9U" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/urO1bvlkN9U/maxresdefault.jpg" alt="הגדרת קנ&quot;מ והדפסה" onerror="this.src='https://img.youtube.com/vi/urO1bvlkN9U/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">הגדרת קנ&quot;מ והדפסה</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">12:15</span>
+                            <span class="difficulty-badge intermediate">בינוני</span>
+                            <span class="video-description">הדפסה בקנה מידה נכון</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=TSvuHw4PTzc" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/TSvuHw4PTzc/maxresdefault.jpg" alt="הגדרת דף, התאמת קנ&quot;מ וייצוא" onerror="this.src='https://img.youtube.com/vi/TSvuHw4PTzc/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">הגדרת דף, התאמת קנ&quot;מ וייצוא</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">21:32</span>
+                            <span class="difficulty-badge intermediate">בינוני</span>
+                            <span class="video-description">הכנת דף וייצוא לקובץ</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- מפריד -->
+        <div class="separator"></div>
+
+        <section class="category-section" id="cat-9">
+            <h2 class="section-title">🖋️ CTB - עובי וצבע קווים</h2>
+            <div class="video-grid">
+                <a href="https://www.youtube.com/watch?v=VUeU55sKiCs" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/VUeU55sKiCs/maxresdefault.jpg" alt="CTB - מבוא" onerror="this.src='https://img.youtube.com/vi/VUeU55sKiCs/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">CTB - מבוא</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">4:31</span>
+                            <span class="difficulty-badge">מתחילים</span>
+                            <span class="video-description">מהו קובץ CTB</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=deKgsZ_S2PI" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/deKgsZ_S2PI/maxresdefault.jpg" alt="הגדרת עובי קו ב-CTB" onerror="this.src='https://img.youtube.com/vi/deKgsZ_S2PI/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">הגדרת עובי קו ב-CTB</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">4:22</span>
+                            <span class="difficulty-badge intermediate">בינוני</span>
+                            <span class="video-description">שליטה בעובי הקווים בהדפסה</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=TYY5yWLEPNE" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/TYY5yWLEPNE/maxresdefault.jpg" alt="הגדרת צבע ב-CTB" onerror="this.src='https://img.youtube.com/vi/TYY5yWLEPNE/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">הגדרת צבע ב-CTB</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">10:29</span>
+                            <span class="difficulty-badge intermediate">בינוני</span>
+                            <span class="video-description">שליטה בצבעי ההדפסה</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=7IvXlxIc7EU" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/7IvXlxIc7EU/maxresdefault.jpg" alt="עבודה עם CTB - עובי קווים מומלצים" onerror="this.src='https://img.youtube.com/vi/7IvXlxIc7EU/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">עבודה עם CTB - עובי קווים מומלצים</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">12:57</span>
+                            <span class="difficulty-badge intermediate">בינוני</span>
+                            <span class="video-description">עובי קווים מומלצים לשרטוט</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=EgYE-bdaFRU" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/EgYE-bdaFRU/maxresdefault.jpg" alt="CTB Files - קבצי CTB" onerror="this.src='https://img.youtube.com/vi/EgYE-bdaFRU/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">CTB Files - קבצי CTB</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">7:09</span>
+                            <span class="difficulty-badge intermediate">בינוני</span>
+                            <span class="video-description">ניהול קבצי CTB</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- מפריד -->
+        <div class="separator"></div>
+
+        <section class="category-section" id="cat-10">
+            <h2 class="section-title">🏗️ חתכים ותוכניות גגות</h2>
+            <div class="video-grid">
+                <a href="https://www.youtube.com/watch?v=JmDjgNGlBP8" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/JmDjgNGlBP8/maxresdefault.jpg" alt="Section 2 - חתך" onerror="this.src='https://img.youtube.com/vi/JmDjgNGlBP8/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">Section 2 - חתך</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">5:40</span>
+                            <span class="difficulty-badge intermediate">בינוני</span>
+                            <span class="video-description">בניית חתך מתוך תכנית</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=vjTaS29fB-A" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/vjTaS29fB-A/maxresdefault.jpg" alt="Section 3 - חתך" onerror="this.src='https://img.youtube.com/vi/vjTaS29fB-A/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">Section 3 - חתך</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">20:54</span>
+                            <span class="difficulty-badge intermediate">בינוני</span>
+                            <span class="video-description">המשך בניית חתך</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=3isqiljIpBM" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/3isqiljIpBM/maxresdefault.jpg" alt="מבוא לבניית חתך" onerror="this.src='https://img.youtube.com/vi/3isqiljIpBM/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">מבוא לבניית חתך</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">23:32</span>
+                            <span class="difficulty-badge intermediate">בינוני</span>
+                            <span class="video-description">שרטוט חתך אדריכלי</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/watch?v=H0sl66TKw6E" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/H0sl66TKw6E/maxresdefault.jpg" alt="תכנית גגות" onerror="this.src='https://img.youtube.com/vi/H0sl66TKw6E/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">תכנית גגות</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">34:25</span>
+                            <span class="difficulty-badge intermediate">בינוני</span>
+                            <span class="video-description">שרטוט תכנית גגות</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- מפריד -->
+        <div class="separator"></div>
+
+        <section class="category-section" id="cat-11">
+            <h2 class="section-title">💻 אוטומציה</h2>
+            <div class="video-grid">
+                <a href="https://www.youtube.com/watch?v=FzV5mj_9jug" target="_blank" class="video-card">
+                    <div class="video-thumbnail">
+                        <img src="https://img.youtube.com/vi/FzV5mj_9jug/maxresdefault.jpg" alt="LISP + Numinc" onerror="this.src='https://img.youtube.com/vi/FzV5mj_9jug/hqdefault.jpg'">
+                        <div class="youtube-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                            YouTube
+                        </div>
+                        <div class="play-overlay"></div>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">LISP + Numinc</h3>
+                        <div class="video-meta">
+                            <span class="video-duration">17:28</span>
+                            <span class="difficulty-badge intermediate">בינוני</span>
+                            <span class="video-description">הרצת סקריפטי LISP והוספת מספור אוטומטי</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <button class="back-to-menu" id="backToMenu" onclick="window.scrollTo({ top: 0 })">☰ לתפריט הקטגוריות</button>
+
+    <script>
+        // חיפוש
+        function performSearch() {
+            const searchValue = document.getElementById('searchBox').value.toLowerCase();
+            const cards = document.querySelectorAll('.video-card');
+            
+            cards.forEach(card => {
+                const title = card.querySelector('.video-title').textContent.toLowerCase();
+                const description = card.querySelector('.video-description').textContent.toLowerCase();
+                
+                if (title.includes(searchValue) || description.includes(searchValue) || searchValue === '') {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        document.getElementById('searchBox').addEventListener('input', performSearch);
+
+        // אנימציה בכניסה לתצוגה
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.category-section').forEach(section => {
+            section.style.opacity = '0';
+            observer.observe(section);
+        });
+
+        // כפתור חזרה לתפריט
+        const backToMenu = document.getElementById("backToMenu");
+        window.addEventListener("scroll", () => {
+            backToMenu.classList.toggle("visible", window.scrollY > 400);
+        }, { passive: true });
+    </script>
+</body>
+</html>

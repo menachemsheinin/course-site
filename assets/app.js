@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const FILES = ['course', 'sessions', 'presentations', 'tools', 'exercises'];
+  const FILES = ['course', 'sessions', 'presentations', 'tools', 'exercises', 'materials'];
   const D = {};
   const app = document.getElementById('app');
   const top = document.getElementById('top');
@@ -12,7 +12,7 @@
   const LETTER = { bg: 'א׳', app: 'ב׳' };
   const TABS = {
     bg: [['', 'סילבוס'], ['schedule', 'מפגשים'], ['presentations', 'פרזנטציות']],
-    app: [['', 'סילבוס'], ['schedule', 'מפגשים'], ['exercises', 'תרגילים'], ['tools', 'כלים']],
+    app: [['', 'סילבוס'], ['schedule', 'מפגשים'], ['exercises', 'תרגילים'], ['tools', 'כלים'], ['materials', 'חומרי למידה']],
   };
   // כתובות ישנות
   const LEGACY = {
@@ -427,6 +427,20 @@
     return out;
   }
 
+  function materials() {
+    const items = (D.materials && D.materials.items) || [];
+    return [
+      h('h1', {}, 'חומרי למידה'),
+      h('div', { class: 'grid' },
+        items.map((i) =>
+          h('a', { class: 'card', href: i.url, target: '_blank', rel: 'noopener' },
+            h('span', { class: 't' }, i.title), h('span', { class: 'd' }, i.desc || '')
+          )
+        )
+      ),
+    ];
+  }
+
   /* ---------- ניתוב ---------- */
 
   /* ---------- גלריית תוצרי תרגיל 1 (קורס יישום): העלאה, רשת תמונות והגדלה ---------- */
@@ -640,7 +654,7 @@
 
   const PAGES = {
     bg: { '': courseHome, schedule, presentations, guide },
-    app: { '': courseHome, schedule, exercises, tools },
+    app: { '': courseHome, schedule, exercises, tools, materials },
   };
 
   function render() {
