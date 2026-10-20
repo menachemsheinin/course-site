@@ -88,28 +88,74 @@
 
   /* ---------- דף הבית ---------- */
 
+  // שרטוטי הרקע של דף הפתיחה: כל מחרוזת היא קו אחד שמצטייר בהדרגה
+  const DRAW = {
+    // רקע: חזית קלאסית, סימטרית סביב x=200
+    bg: [
+      'M10 240 H390',
+      'M50 230 H350',
+      'M62 220 H338',
+      'M72 210 H328',
+      'M68 205 H92 M72 205 V108 M88 205 V108',
+      'M128 205 H152 M132 205 V108 M148 205 V108',
+      'M188 205 H212 M192 205 V108 M208 205 V108',
+      'M248 205 H272 M252 205 V108 M268 205 V108',
+      'M308 205 H332 M312 205 V108 M328 205 V108',
+      'M67 108 H93 M127 108 H153 M187 108 H213 M247 108 H273 M307 108 H333',
+      'M60 100 H340 V82 H60 Z',
+      'M60 91 H340',
+      'M50 82 H350 L200 22 Z',
+      'M70 78 H330 L200 26 Z',
+      'M200 46 m-11 0 a11 11 0 1 0 22 0 a11 11 0 1 0 -22 0',
+    ],
+    // יישום: נפחים מודרניים, חלונות ומידה
+    app: [
+      'M10 240 H390',
+      'M60 240 V120 H220 V240',
+      'M220 240 V165 H345 V240',
+      'M30 112 H250 V120 H30 Z',
+      'M95 150 H185 V205 H95 Z',
+      'M140 150 V205 M95 178 H185',
+      'M255 190 H320 V240 M255 190 V240',
+      'M330 95 m-30 0 a30 30 0 1 0 60 0 a30 30 0 1 0 -60 0',
+      'M60 258 H220 M60 252 V264 M220 252 V264',
+      'M345 258 H220 M345 252 V264',
+    ],
+  };
+  function drawing(k) {
+    const el = h('span', { class: 'sketch', 'aria-hidden': 'true' });
+    el.innerHTML = '<svg viewBox="0 0 400 270" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'
+      + DRAW[k].map((d, n) => '<path pathLength="1" style="--i:' + n + '" d="' + d + '"/>').join('') + '</svg>';
+    return el;
+  }
+
   function home() {
     const c = D.course;
-    const out = [h('div', { class: 'hero' }, h('h1', {}, c.title), h('p', { class: 'muted', style: 'margin:0' }, c.subtitle))];
-
-    (c.announcements || []).forEach((a) =>
-      out.push(h('div', { class: 'note' }, h('div', { class: 'when' }, a.date || ''), h('div', {}, a.text)))
-    );
-
-    out.push(
-      h('div', { class: 'doors' },
+    const out = [];
+    const stage = h('div', { class: 'stage' },
+      h('div', { class: 'stage-head' },
+        logo(),
+        h('h1', {}, c.title),
+        h('p', { class: 'dim' }, h('span', {}, c.subtitle || ''))
+      ),
+      h('div', { class: 'halves' },
         KEYS.map((k) => {
           const nx = nextFor(k);
-          return h('a', { class: 'door k-' + k, href: '#/' + k },
-            h('span', { class: 'big', 'aria-hidden': 'true' }, LETTER[k]),
+          return h('a', { class: 'half k-' + k, href: '#/' + k },
             h('span', { class: 'kicker' }, 'קורס ' + LETTER[k]),
             h('span', { class: 'dname' }, LABEL[k]),
             h('span', { class: 'dsub' }, c.courses[k].short),
+            drawing(k),
             nx ? h('span', { class: 'dnext' }, h('b', {}, 'הבא · ' + fmt(nx.date)), h('span', {}, nx[k].topic)) : null,
             h('span', { class: 'go' }, 'כניסה ←')
           );
         })
       )
+    );
+    out.push(stage);
+
+    (c.announcements || []).forEach((a) =>
+      out.push(h('div', { class: 'note' }, h('div', { class: 'when' }, a.date || ''), h('div', {}, a.text)))
     );
     return out;
   }

@@ -290,3 +290,42 @@ h2.withicon { display: flex; justify-content: space-between; align-items: center
 .vcard .vt { font-weight: 700; padding: 0 .7em; }
 .vcard .vm { font-size: .82em; color: #666; padding: 0 .7em; }
 [hidden] { display: none !important; }
+
+/* ---------- דף פתיחה: רקע שרטוט חי ---------- */
+.stage { margin-top: 18px; border-radius: 14px; overflow: hidden; color: #eaf0f7; background-color: #1b2a3b;
+  background-image: linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px),
+    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size: 80px 80px, 80px 80px, 16px 16px, 16px 16px; }
+.stage-head { text-align: center; padding: 34px 18px 8px; }
+.stage-head .logo { width: 34px; height: 34px; display: inline-block; opacity: .9; }
+.stage-head h1 { font-size: 2.8rem; margin: .15em 0 .1em; color: #fff; }
+.stage-head .dim { display: flex; align-items: center; gap: 12px; max-width: 520px; margin: 6px auto 0; font-size: .95rem; color: #a9bbd0; }
+.stage-head .dim::before, .stage-head .dim::after { content: ''; flex: 1; height: 9px; border-block: 0; border-inline: 1px solid #a9bbd0; background: linear-gradient(#a9bbd0, #a9bbd0) center / 100% 1px no-repeat; }
+.halves { display: flex; min-height: 440px; margin-top: 10px; }
+.half { position: relative; flex: 1; display: flex; flex-direction: column; padding: 26px 26px 22px; color: #fff; text-decoration: none; overflow: hidden; transition: flex .45s ease, background-color .3s;
+  background-color: color-mix(in srgb, var(--cx) 55%, transparent); }
+.half + .half { border-inline-start: 1px dashed rgba(255,255,255,.35); }
+.halves:hover .half { flex: .8; }
+.halves .half:hover { flex: 1.5; background-color: color-mix(in srgb, var(--cx) 78%, transparent); }
+.half .kicker { font-weight: 700; opacity: .85; letter-spacing: .04em; position: relative; }
+.half .dname { font-size: 3.4rem; font-weight: 800; line-height: 1.05; margin-top: .1em; position: relative; }
+.half .dsub { opacity: .92; margin-top: .3em; max-width: 26ch; position: relative; }
+.half .dnext { margin-top: auto; background: rgba(0,0,0,.22); padding: 10px 14px; border-radius: var(--radius); font-size: .92rem; display: block; position: relative; }
+.half .dnext b { display: block; }
+.half .dnext span { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.half .go { margin-top: 12px; font-weight: 800; font-size: 1.1rem; position: relative; }
+.sketch { position: relative; flex: 1; min-height: 130px; margin-block: 14px; opacity: .6; pointer-events: none; transition: opacity .3s; }
+.sketch svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.sketch path { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 1.4s ease forwards; animation-delay: calc(var(--i) * .16s + .2s); }
+.half:hover .sketch { opacity: .85; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) { .sketch path { animation: none; stroke-dashoffset: 0; } .half { transition: none; } }
+@media (max-width: 700px) {
+  .halves { flex-direction: column; min-height: 0; }
+  .half, .halves:hover .half, .halves .half:hover { flex: none; min-height: 330px; }
+  .half + .half { border-inline-start: 0; border-top: 1px dashed rgba(255,255,255,.35); }
+  .stage-head h1 { font-size: 2.1rem; }
+  .half .dname { font-size: 2.6rem; }
+}
+.half .dsub { min-height: 3.2em; }
+.half .dnext { min-height: calc(3 * 1.6 * .92rem + 20px); }
