@@ -391,8 +391,7 @@
 
     const out = [
       h('h1', {}, 'פרזנטציות'),
-      h('p', { class: 'muted' }, P.intro || ''),
-      h('ul', { class: 'clean' }, (P.rules || []).map((r) => h('li', {}, r))),
+      P.guide ? h('p', {}, h('a', { class: 'btn btn-lg', href: '#/bg/guide' }, 'הנחיות מפורטות לתרגיל הפרזנטציה ←')) : null,
     ];
     if (P.signupUrl) out.push(h('p', {}, h('a', { class: 'btn', href: P.signupUrl, target: '_blank', rel: 'noopener' }, 'רישום לנושא')));
     const gear = h('a', { class: 'adm-link', href: 'admin.html', title: 'ניהול השיבוץ (למרצה)', 'aria-label': 'ניהול השיבוץ (למרצה)' });
@@ -430,8 +429,30 @@
 
   /* ---------- ניתוב ---------- */
 
+  /* ---------- הנחיות לתרגיל הפרזנטציה (קורס רקע) ---------- */
+
+  function guide() {
+    const G = D.presentations.guide || {};
+    const out = [
+      h('p', { class: 'crumb' }, link('→ חזרה לרשימת הנושאים והשיבוץ', '#/bg/presentations')),
+      h('h1', {}, G.title || 'הנחיות'),
+    ];
+    if (G.intro) out.push(h('p', { class: 'lead-line' }, G.intro));
+    if ((G.facts || []).length) {
+      out.push(h('div', { class: 'tiles' }, G.facts.map((f) => h('div', { class: 'tile' }, h('div', { class: 'pct' }, f.big), h('div', { class: 'lbl' }, f.label)))));
+    }
+    (G.sections || []).forEach((s) =>
+      out.push(
+        h('section', { class: 'gsec' + (s.kind === 'warn' ? ' warn' : '') },
+          h('h2', {}, s.title),
+          h('ul', { class: 'clean' }, (s.points || []).map((p) => h('li', {}, p)))))
+    );
+    out.push(h('p', { style: 'margin-top:1.6em' }, h('a', { class: 'btn', href: '#/bg/presentations' }, 'לבחירת נושא ושיבוץ')));
+    return out;
+  }
+
   const PAGES = {
-    bg: { '': courseHome, schedule, presentations },
+    bg: { '': courseHome, schedule, presentations, guide },
     app: { '': courseHome, schedule, tools },
   };
 
@@ -445,12 +466,14 @@
     if (k && !(page in PAGES[k])) page = '';
 
     document.body.dataset.course = k || '';
-    header(k, page);
+    // דף ההנחיות שייך ללשונית "פרזנטציות"
+    const tabPage = page === 'guide' ? 'presentations' : page;
+    header(k, tabPage);
     const view = k ? PAGES[k][page] : home;
     app.replaceChildren(...view(k).filter(Boolean));
 
-    const tab = k && TABS[k].find(([p]) => p === page);
-    document.title = (k ? LABEL[k] + (page ? ' · ' + tab[1] : '') + ' · ' : '') + D.course.title;
+    const tab = k && TABS[k].find(([p]) => p === tabPage);
+    document.title = (k ? LABEL[k] + (page ? ' · ' + (page === 'guide' ? 'הנחיות' : tab[1]) : '') + ' · ' : '') + D.course.title;
     window.scrollTo(0, 0);
   }
 
