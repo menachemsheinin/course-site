@@ -521,8 +521,9 @@
     const preview = h('img', { class: 'upl-prev', alt: '', hidden: true });
     const msg = h('div', { class: 'upl-msg', role: 'status' });
     const send = h('button', { class: 'btn', type: 'button' }, 'העלאה');
-    const form = h('div', { class: 'upl' },
-      h('h2', {}, 'העלאת התרגיל'),
+    // סרגל נפתח: סגור כברירת מחדל כדי שהגלריה תהיה במרכז, ונפתח בלחיצה
+    const form = h('details', { class: 'upl' },
+      h('summary', {}, h('span', { class: 'upl-plus', 'aria-hidden': 'true' }, '+'), 'העלאת התרגיל'),
       h('p', { class: 'muted small', style: 'margin-top:0' }, 'הגיליון להגשה: PDF (עד 4MB) או תמונה JPG/PNG, ושם. בגלריה יוצג העמוד הראשון.'),
       h('div', { class: 'upl-row' }, file, preview),
       h('div', { class: 'upl-row' }, names, caption, code, send),
@@ -563,7 +564,10 @@
           mem.set('galName', nm);
           file.value = ''; caption.value = ''; preview.hidden = true;
           msg.className = 'upl-msg ok'; msg.textContent = 'התמונה הועלתה ומוצגת בגלריה.';
+          form.open = false; // הסרגל נסגר והגלריה נראית; ההודעה מוצגת מעליו
           await refresh();
+          info.textContent = 'התמונה הועלתה ומוצגת בגלריה.'; info.className = 'small upl-ok';
+          setTimeout(() => { info.className = 'muted small'; draw(); }, 5000);
         } else {
           const e = (r.data || {}).error;
           if (e === 'code') code.hidden = false;
@@ -584,7 +588,7 @@
         ? { src: imgUrl(it.id, 'full'), title: it.name, caption: it.caption, openUrl: imgUrl(it.id, 'pdf'), openLabel: 'פתיחת ה-PDF המלא' }
         : { src: imgUrl(it.id, 'full'), title: it.name, caption: it.caption, openUrl: imgUrl(it.id, 'full') }));
       grid.replaceChildren(...(live && !items.length
-        ? [h('p', { class: 'muted' }, 'עדיין לא הועלו תוצרים. אפשר להיות הראשונים.')]
+        ? [h('p', { class: 'muted' }, 'עדיין לא הועלו תוצרים. לחצו על ״העלאת התרגיל״ כדי להיות הראשונים.')]
         : items.map((it, i) =>
           h('figure', { class: 'gal-item' },
             h('button', { class: 'gal-btn', type: 'button', 'aria-label': 'הגדלה: ' + it.name, onclick: () => GalleryTools.openLightbox(lb, i) },
