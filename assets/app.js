@@ -44,9 +44,13 @@
     toDay(iso).toLocaleDateString('he-IL', { weekday: 'short', day: 'numeric', month: 'numeric' });
   const today = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
 
+  // תחילת "היום הפעיל": אחרי 13:00 (סיום השיעור) נחשב כאילו כבר מחר
+  function cutoff() { const t = today(); if (new Date().getHours() >= 13) t.setDate(t.getDate() + 1); return t; }
+
   // המפגש הבא של קורס מסוים
   function nextFor(k) {
-    const t = today();
+    // המפגש של היום נחשב "הבא" עד סיום השיעור (13:00), ואז עוברים למפגש שאחריו
+    const t = cutoff();
     return D.sessions.sessions.find((s) => s.kind !== 'noclass' && s[k] && toDay(s.date) >= t) || null;
   }
 
@@ -156,7 +160,7 @@
   /* ---------- מפגשים (של קורס אחד) ---------- */
 
   function schedule(k) {
-    const t = today();
+    const t = cutoff();
     const nx = nextFor(k);
     const rows = D.sessions.sessions.map((s) => {
       const past = toDay(s.date) < t;
@@ -264,7 +268,7 @@
     const takenBy = (i) => (i.id && claims[i.id] ? claims[i.id].team : i.takenBy || '');
     const isTaken = (i) => !!takenBy(i);
     const usage = (n) => Object.values(claims).filter((c) => c.slot === n).length;
-    const past = (s) => toDay(s.date) < today();
+    const past = (s) => toDay(s.date) < cutoff();
 
     // לוח התאריכים: מי מציג מתי, וכמה מקומות פנויים
     function drawBoard() {
