@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>ניהול שיבוץ</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    .adm-row { padding: 8px 0; border-bottom: 1px solid var(--line); }
+    .adm-row .top-line { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; }
+    .adm-row .who { color: var(--ok); font-size: .95rem; }
+    .adm-row.free .who { color: var(--muted); }
+    .adm-row .edit { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; padding: 8px; background: var(--cc-soft); border-radius: var(--radius); }
+    .adm-row .edit input, .adm-row .edit select { font: inherit; padding: 6px 10px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); color: var(--text); }
+    .adm-row .edit input { flex: 1; min-width: 180px; }
+    .adm-login { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0; }
+    .adm-login input { font: inherit; padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); color: var(--text); min-width: 240px; }
+    .adm-msg { min-height: 1.4em; color: #b3261e; }
+    .adm-dates { display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); margin: 10px 0 18px; }
+    .adm-dates div { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 6px 12px; font-size: .92rem; }
+  </style>
+</head>
+<body>
+  <header class="top"><div class="wrap"><div class="bar"><a class="brand" href="./">כלים דיגיטליים א׳</a></div></div></header>
+  <main class="wrap">
+    <h1>ניהול שיבוץ לפרזנטציות</h1>
+    <p class="muted">לשימוש המרצה בלבד. מפתח הניהול מוגדר ב-Netlify (משתנה ADMIN_KEY).</p>
+    <form class="adm-login" id="login">
+      <input type="password" id="key" placeholder="מפתח ניהול" autocomplete="current-password">
+      <button class="btn" type="submit">כניסה</button>
+    </form>
+    <div class="adm-msg" id="msg"></div>
+    <div id="panel" hidden>
+      <p class="muted small" id="summary"></p>
+      <div class="adm-dates" id="dates"></div>
+      <div id="rows"></div>
+    </div>
+  </main>
+  <script>
+    (() => {
+      const $ = (id) => document.getElementById(id);
+      let key = '';
+      let loading = false;
+      let editing = null; // מזהה נושא שפתוח לו טופס עריכה
+      const fmt = (iso) => new Date(iso + 'T00:00:00').toLocaleDateString('he-IL', { weekday: 'short', day: 'numeric', month: 'numeric' });
+      const post = (body) => fetch('/api/claims', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...body, adminKey: key }) })
+        .then(async (r) => ({ ok: r.ok, data: await r.json().catch(() => ({})) }));
+      const ERR = { 'slot-full': 'התאריך מלא', slot: 'בחרו תאריך', team: 'שמות לא תקינים', admin: 'מפתח ניהול שגוי' };
+
+      async function load() {
+        if (loading || editing) return; // לא מרעננים בזמן עריכה
+        loading = true;
+        try {
+          const [t, s, c] = await Promise.all([
+            fetch('data/presentations.json', { cache: 'no-store' }).then((r) => r.json()),
+            fetch('data/sessions.json', { cache: 'no-store' }).then((r) => r.json()),
+            fetch('/api/claims', { cache: 'no-store' }).then((r) => r.json()),
+          ]);
+          const topics = (t.items || []).filter((i) => i.id);
+          const slots = (s.sessions || []).filter((x) => x.kind !== 'noclass' && x.bg && x.bg.presentations > 0).map((x) => ({ n: x.n, date: x.date, cap: x.bg.presentations }));
+          const claims = c.claims || {};
+          const used = (n) => Object.values(claims).filter((x) => x.slot === n).length;
+          const taken = topics.filter((i) => claims[i.id]).length;
+          $('summary').textContent = taken + ' נתפסו מתוך ' + topics.length + ' נושאים';
+          $('dates').replaceChildren(...slots.map((x) => { const d = document.createElement('div'); d.textContent = fmt(x.date) + ': ' + used(x.n) + ' מתוך ' + x.cap; return d; }));
+          $('rows').replaceChildren(...topics.map((i) => row(i, claims[i.id], slots, used)));
+        } finally { loading = false; }
+      }
+
+      function row(i, cl, slots, used) {
+        const el = document.createElement('div'); el.className = 'adm-row' + (cl ? '' : ' free');
+        const top = document.createElement('div'); top.className = 'top-line';
+        const left = document.createElement('div');
+        const n = document.createElement('strong'); n.textContent = i.name;
+        const who = document.createElement('div'); who.className = 'who';
+        const slot = cl && slots.find((x) => x.n === cl.slot);
+        who.textContent = cl ? 'נבחר על ידי: ' + cl.team + (slot ? ' · ' + fmt(slot.date) : ' · ללא תאריך') : 'פנוי';
+        left.append(n, who);
+        const btns = document.createElement('div');
+        const mk = (text, fn) => { const b = document.createElement('button'); b.className = 'mini'; b.type = 'button'; b.textContent = text; b.style.marginInlineStart = '6px'; b.addEventListener('click', fn); return b; };
+        if (cl) btns.append(mk('שחרר', async () => { if (confirm('לשחרר את ״' + i.name + '״?')) { await post({ action: 'admin-release', topicId: i.id }); editing = null; load(); } }));
+        btns.append(mk(cl ? 'שנה' : 'שבץ ידנית', () => { editing = editing === i.id ? null : i.id; if (editing) { el.append(form(i, cl, slots, used)); } else { load(); } }));
+        top.append(left, btns);
+        el.append(top);
+        if (editing === i.id) el.append(form(i, cl, slots, used));
+        return el;
+      }
+
+      function form(i, cl, slots, used) {
+        const box = document.createElement('div'); box.className = 'edit';
+        const team = document.createElement('input'); team.placeholder = 'שמות חברי השלשה'; team.value = cl ? cl.team : '';
+        const sel = document.createElement('select');
+        const o0 = document.createElement('option'); o0.value = ''; o0.textContent = 'בחרו תאריך'; sel.append(o0);
+        slots.forEach((x) => { const o = document.createElement('option'); o.value = String(x.n); o.textContent = fmt(x.date) + ' · ' + used(x.n) + '/' + x.cap; sel.append(o); });
+        if (cl && cl.slot) sel.value = String(cl.slot);
+        const save = document.createElement('button'); save.className = 'mini pick'; save.type = 'button'; save.textContent = 'שמירה';
+        const cancel = document.createElement('button'); cancel.className = 'mini'; cancel.type = 'button'; cancel.textContent = 'ביטול';
+        const err = document.createElement('span'); err.style.color = '#b3261e';
+        save.addEventListener('click', async () => {
+          const r = await post({ action: 'admin-claim', topicId: i.id, team: team.value, slot: Number(sel.value) });
+          if (!r.ok) { err.textContent = ERR[r.data.error] || 'נכשל'; return; }
+          editing = null; load();
+        });
+        cancel.addEventListener('click', () => { editing = null; load(); });
+        box.append(team, sel, save, cancel, err);
+        return box;
+      }
+
+      $('login').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        key = $('key').value.trim();
+        $('msg').textContent = '';
+        const r = await post({ action: 'admin-check' });
+        if (!r.ok) { $('msg').textContent = 'מפתח שגוי, או ש-ADMIN_KEY עדיין לא הוגדר ב-Netlify.'; return; }
+        $('panel').hidden = false;
+        load();
+        setInterval(() => { if (!document.hidden) load(); }, 10000);
+      });
+    })();
+  </script>
+</body>
+</html>

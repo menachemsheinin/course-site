@@ -189,33 +189,200 @@
 
   const CATS = { figure: 'דמויות', topic: 'נושאים', tool: 'כלים' };
 
+  /* ---- שיבוץ חי: הנתונים נשמרים בשרת (Netlify Function + Blobs). הדף מתעדכן אוטומטית ---- */
+  const CLAIMS_API = '/api/claims';
+  let pollTimer = null;
+  let memToken = null;
+  const stopPolling = () => { clearInterval(pollTimer); pollTimer = null; };
+
+  // מזהה אנונימי של הדפדפן: מאפשר לשלשה לשחרר או להחליף את הבחירה שלה, ורק לה
+  function myToken() {
+    try {
+      let t = localStorage.getItem('presToken');
+      if (!t) { t = makeToken(); localStorage.setItem('presToken', t); }
+      return t;
+    } catch (e) { return memToken || (memToken = makeToken()); }
+  }
+  function makeToken() {
+    const raw = (window.crypto && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Date.now().toString(36));
+    return (raw.replace(/[^A-Za-z0-9_-]/g, '') + 'abcdef0123456789').slice(0, 40);
+  }
+  const mem = {
+    get: (k) => { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } },
+    set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) { /* ללא אחסון */ } },
+  };
+  async function claimsApi(method, body) {
+    const r = await fetch(CLAIMS_API, {
+      method, cache: 'no-store',
+      headers: { 'Content-Type': 'application/json', 'X-Token': myToken() },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    let data = null;
+    try { data = await r.json(); } catch (e) { /* תשובה ריקה */ }
+    return { ok: r.ok, status: r.status, data };
+  }
+  const CLAIM_ERRORS = {
+    taken: 'הנושא כבר נתפס. בחרו נושא אחר.',
+    code: 'קוד הכיתה שגוי.',
+    team: 'נא לרשום את שמות חברי השלשה (2 עד 80 תווים).',
+    slot: 'נא לבחור תאריך.',
+    'slot-full': 'התאריך כבר מלא. בחרו תאריך אחר.',
+    'slot-past': 'התאריך כבר עבר. בחרו תאריך אחר.',
+    full: 'הרשימה מלאה, פנו למרצה.',
+    config: 'הלוח לא זמין כרגע. נסו שוב עוד מעט.',
+    'unknown-topic': 'הנושא הזה לא קיים ברשימה. רעננו את הדף.',
+  };
+
+  // תאריכי הפרזנטציות של הקורס: מפגשים שבהם יש פרזנטציות (bg.presentations), ומספר המקומות בכל אחד
+  const presentationSlots = () =>
+    D.sessions.sessions
+      .filter((s) => s.kind !== 'noclass' && s.bg && s.bg.presentations > 0)
+      .map((s) => ({ n: s.n, date: s.date, cap: s.bg.presentations }));
+
   function presentations() {
     const P = D.presentations;
+    const SLOTS = presentationSlots();
+    const slotInfo = (n) => SLOTS.find((s) => s.n === n);
+    const slotName = (n) => { const s = slotInfo(n); return s ? fmt(s.date) : ''; };
     let cat = 'all';
+    let status = 'all';
     let q = '';
+    let claims = {};
+    let live = null; // null: טוען · true: זמין · false: השיבוץ החי לא זמין
+    let codeRequired = false;
+    let openForm = null;
+    let formError = '';
+    let busy = false;
     const list = h('div', {});
     const count = h('p', { class: 'muted small' });
+    const note = h('p', { class: 'muted small', style: 'margin:.2em 0 0' });
+    const mine = h('div', {});
+    const board = h('div', {});
     const chips = h('div', { class: 'chips', role: 'group', 'aria-label': 'סינון לפי קטגוריה' });
+    const statusChips = h('div', { class: 'chips', role: 'group', 'aria-label': 'סינון לפי מצב' });
+
+    const takenBy = (i) => (i.id && claims[i.id] ? claims[i.id].team : i.takenBy || '');
+    const isTaken = (i) => !!takenBy(i);
+    const usage = (n) => Object.values(claims).filter((c) => c.slot === n).length;
+    const past = (s) => toDay(s.date) < today();
+
+    // לוח התאריכים: מי מציג מתי, וכמה מקומות פנויים
+    function drawBoard() {
+      if (!live) { board.replaceChildren(); return; }
+      board.replaceChildren(
+        h('div', { class: 'slots' },
+          SLOTS.map((s) => {
+            const taken = P.items.filter((i) => i.id && claims[i.id] && claims[i.id].slot === s.n).sort((a, b) => claims[a.id].ts - claims[b.id].ts);
+            const free = Math.max(0, s.cap - taken.length);
+            return h('div', { class: 'slotcard' + (free === 0 ? ' full' : '') + (past(s) ? ' past' : '') },
+              h('div', { class: 'sh' }, h('strong', {}, fmt(s.date)), h('span', { class: 'tag ' + (free ? 'ok' : '') }, free ? 'פנוי: ' + free + ' מתוך ' + s.cap : 'מלא')),
+              taken.map((i) => h('div', { class: 'ss' }, h('b', {}, i.name), ' · ', claims[i.id].team)));
+          })));
+    }
 
     function draw() {
       list.replaceChildren();
       const shown = P.items.filter(
-        (i) => (cat === 'all' || i.cat === cat) && (!q || (i.name + ' ' + (i.desc || '')).toLowerCase().includes(q))
+        (i) => (cat === 'all' || i.cat === cat)
+          && (status === 'all' || (status === 'free') === !isTaken(i))
+          && (!q || (i.name + ' ' + (i.desc || '')).toLowerCase().includes(q))
       );
-      shown.forEach((i) =>
-        list.append(
-          h('div', { class: 'item ' + (i.takenBy ? 'taken' : '') },
-            h('div', {}, h('div', { class: 'n' }, i.name), h('div', { class: 'muted small' }, i.desc || '')),
-            h('div', {}, h('span', { class: 'tag' }, CATS[i.cat]), i.takenBy ? h('span', { class: 'tag ok' }, 'נבחר') : null)
-          )
-        )
-      );
-      count.textContent = shown.length + ' פריטים · ' + P.items.filter((i) => i.takenBy).length + ' נבחרו';
+      shown.forEach((i) => list.append(row(i)));
+      if (!shown.length) list.append(h('p', { class: 'muted' }, 'אין פריטים שמתאימים לסינון.'));
+      const taken = P.items.filter(isTaken).length;
+      count.textContent = shown.length + ' פריטים · ' + taken + ' נתפסו · ' + (P.items.length - taken) + ' פנויים';
+      note.textContent = live ? 'בבחירת נושא בוחרים גם תאריך להצגה (עד ' + (SLOTS[0] ? SLOTS[0].cap : 3) + ' פרזנטציות בכל תאריך). העמוד מתעדכן אוטומטית.' : '';
       [...chips.children].forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.c === cat)));
+      [...statusChips.children].forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.c === status)));
+      const m = P.items.find((i) => i.id && claims[i.id] && claims[i.id].mine);
+      mine.replaceChildren(...(m
+        ? [h('div', { class: 'note' }, 'השלשה שלכם בחרה: ', h('strong', {}, m.name), ' (' + claims[m.id].team + ')' + (claims[m.id].slot ? ', הצגה ב' + slotName(claims[m.id].slot) : '') + '. אפשר לשנות תאריך או שמות, לשחרר, או לבחור נושא אחר והוא יחליף את הקודם.')]
+        : []));
+      drawBoard();
+    }
+
+    function row(i) {
+      const c = i.id && claims[i.id];
+      const taken = isTaken(i);
+      const side = [h('span', { class: 'tag' }, CATS[i.cat]), taken ? h('span', { class: 'tag ok' }, 'נבחר') : null];
+      if (live && i.id) {
+        if (c && c.mine) {
+          side.push(
+            h('button', { class: 'mini', type: 'button', onclick: () => { openForm = openForm === i.id ? null : i.id; formError = ''; draw(); } }, 'שינוי'),
+            h('button', { class: 'mini', type: 'button', onclick: () => release(i) }, 'שחרור'));
+        } else if (!taken) {
+          side.push(h('button', { class: 'mini pick', type: 'button', onclick: () => { openForm = openForm === i.id ? null : i.id; formError = ''; draw(); } }, 'בחירה'));
+        }
+      }
+      const el = h('div', { class: 'item ' + (taken ? 'taken' : '') },
+        h('div', { class: 'ibody' },
+          h('div', { class: 'n' }, i.name),
+          h('div', { class: 'muted small' }, i.desc || ''),
+          taken ? h('div', { class: 'by' }, 'נבחר על ידי: ', takenBy(i), c && c.slot ? ' · ' + slotName(c.slot) : '') : null),
+        h('div', { class: 'iside' }, side));
+      if (openForm === i.id && (!taken || (c && c.mine))) el.append(form(i, c));
+      return el;
+    }
+
+    function form(i, current) {
+      const team = h('input', { type: 'text', maxlength: 80, placeholder: 'שמות חברי השלשה', 'aria-label': 'שמות חברי השלשה', value: current ? current.team : mem.get('presTeam') });
+      const code = codeRequired ? h('input', { type: 'text', inputmode: 'numeric', maxlength: 20, placeholder: 'קוד הכיתה', 'aria-label': 'קוד הכיתה', value: mem.get('presCode'), style: 'max-width:9em' }) : null;
+      const dateSel = h('select', { 'aria-label': 'תאריך הפרזנטציה' },
+        h('option', { value: '' }, 'בחרו תאריך'),
+        SLOTS.map((s) => {
+          const mineHere = current && current.slot === s.n;
+          const left = s.cap - usage(s.n) + (mineHere ? 1 : 0);
+          const off = !mineHere && (left <= 0 || past(s));
+          return h('option', { value: String(s.n), disabled: off }, fmt(s.date) + ' · ' + (past(s) && !mineHere ? 'עבר' : left > 0 ? 'נותרו ' + left : 'מלא'));
+        }));
+      if (current && current.slot) dateSel.value = String(current.slot);
+      const err = h('div', { class: 'ferr' }, formError);
+      const go = h('button', { class: 'mini pick', type: 'button' }, current ? 'עדכון' : 'אישור');
+      const submit = async () => {
+        if (busy) return;
+        const t = team.value.trim();
+        if (t.length < 2) { err.textContent = CLAIM_ERRORS.team; return; }
+        if (!dateSel.value) { err.textContent = CLAIM_ERRORS.slot; return; }
+        busy = true; go.disabled = true; err.textContent = '';
+        mem.set('presTeam', t); if (code) mem.set('presCode', code.value.trim());
+        try {
+          const r = await claimsApi('POST', { action: 'claim', topicId: i.id, team: t, slot: Number(dateSel.value), code: code ? code.value.trim() : '' });
+          if (r.ok) { openForm = null; formError = ''; }
+          else { formError = CLAIM_ERRORS[(r.data || {}).error] || 'משהו השתבש. נסו שוב.'; if ((r.data || {}).error === 'taken') openForm = null; }
+        } catch (e) { formError = 'אין חיבור לשרת. נסו שוב.'; }
+        busy = false;
+        await refresh(true);
+        if (openForm) draw();
+      };
+      go.addEventListener('click', submit);
+      [team, code].filter(Boolean).forEach((inp) => inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') submit(); }));
+      setTimeout(() => team.focus(), 0);
+      return h('div', { class: 'claimform' },
+        h('div', { class: 'frow' }, team, dateSel, code, go, h('button', { class: 'mini', type: 'button', onclick: () => { openForm = null; formError = ''; draw(); } }, 'ביטול')),
+        err);
+    }
+
+    async function release(i) {
+      if (!confirm('לשחרר את ״' + i.name + '״?')) return;
+      try { await claimsApi('POST', { action: 'release', topicId: i.id }); } catch (e) { /* ייטען מחדש */ }
+      await refresh(true);
+    }
+
+    async function refresh(force) {
+      try {
+        const r = await claimsApi('GET');
+        if (r.ok && r.data && r.data.claims) { claims = r.data.claims; codeRequired = !!r.data.codeRequired; live = true; }
+        else live = false;
+      } catch (e) { if (live === null) live = false; }
+      // לא מציירים מחדש בזמן שהסטודנט מקליד בטופס, כדי לא לאבד את מה שהקליד
+      if (force || openForm == null) draw(); else drawBoard();
     }
 
     [['all', 'הכול'], ...Object.entries(CATS)].forEach(([key, label]) =>
       chips.append(h('button', { class: 'chip', type: 'button', 'data-c': key, onclick: () => { cat = key; draw(); } }, label))
+    );
+    [['all', 'כל המצבים'], ['free', 'פנויים'], ['taken', 'נתפסו']].forEach(([key, label]) =>
+      statusChips.append(h('button', { class: 'chip', type: 'button', 'data-c': key, onclick: () => { status = key; draw(); } }, label))
     );
     const search = h('input', {
       class: 'search', type: 'search', placeholder: 'חיפוש…', 'aria-label': 'חיפוש',
@@ -228,8 +395,16 @@
       h('ul', { class: 'clean' }, (P.rules || []).map((r) => h('li', {}, r))),
     ];
     if (P.signupUrl) out.push(h('p', {}, h('a', { class: 'btn', href: P.signupUrl, target: '_blank', rel: 'noopener' }, 'רישום לנושא')));
-    out.push(h('h2', {}, 'הנושאים'), chips, search, count, list);
+    const gear = h('a', { class: 'adm-link', href: 'admin.html', title: 'ניהול השיבוץ (למרצה)', 'aria-label': 'ניהול השיבוץ (למרצה)' });
+    gear.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>';
+    out.push(h('h2', { class: 'withicon' }, 'הנושאים', gear), mine, board, chips, statusChips, search, count, note, list);
     draw();
+
+    // טעינה ראשונה ועדכון אוטומטי כל כמה שניות כל עוד הדף פתוח ונראה
+    stopPolling();
+    refresh().then(() => {
+      if (live) pollTimer = setInterval(() => { if (!document.hidden) refresh(); }, 6000);
+    });
     return out;
   }
 
@@ -264,6 +439,7 @@
     const parts = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean);
     if (parts[0] in LEGACY) { location.replace(LEGACY[parts[0]]); return; }
 
+    stopPolling();
     const k = KEYS.includes(parts[0]) ? parts[0] : null;
     let page = k ? parts[1] || '' : '';
     if (k && !(page in PAGES[k])) page = '';

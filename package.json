@@ -1,0 +1,8 @@
+{
+  "name": "course-site",
+  "private": true,
+  "description": "Static course site with a small Netlify Function for live presentation signups",
+  "dependencies": {
+    "@netlify/blobs": "^10.7.13"
+  }
+}

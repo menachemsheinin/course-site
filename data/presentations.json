@@ -8,36 +8,185 @@
   ],
   "signupUrl": "",
   "items": [
-    { "cat": "figure", "name": "דאגלס אנגלברט", "desc": "ממציא העכבר ו״הגברה קוגניטיבית״ (1968)" },
-    { "cat": "figure", "name": "בקמינסטר פולר", "desc": "הכיפה הגיאודזית, עיצוב לפי עיקרון מתמטי" },
-    { "cat": "figure", "name": "וויליאם ג׳יי מיטשל", "desc": "MIT, The Logic of Architecture (1990)" },
-    { "cat": "figure", "name": "סטיב ג׳ובס", "desc": "ה-GUI, Macintosh (1984) ופיקסאר" },
-    { "cat": "figure", "name": "אנטוני גאודי", "desc": "מודלים היפרבוליים-קטנריים, ״פרוטו-דיגיטלי״ בלי מחשב" },
-    { "cat": "figure", "name": "ריצ׳רד רוג׳רס ורנצו פיאנו", "desc": "מרכז פומפידו (1977) ואדריכלות היי-טק" },
-    { "cat": "figure", "name": "סטיבן קונס", "desc": "Coons Patches, משטחים חלקים (שנות ה-60)" },
-    { "cat": "figure", "name": "וויליאם פטר", "desc": "טבע את המונח Computer Graphics (1960)" },
-    { "cat": "figure", "name": "הרברט פלקר", "desc": "Solid Modeling ו-CSG, קורנל" },
-    { "cat": "figure", "name": "ואנוור בוש", "desc": "As We May Think (1945) ו-Memex" },
-    { "cat": "figure", "name": "ג׳יי.סי.אר. ליקליידר", "desc": "Man-Computer Symbiosis (1960), מימון ARPA" },
-    { "cat": "figure", "name": "צ׳אק איסטמן", "desc": "Building Description System, הבסיס הרעיוני ל-BIM" },
-    { "cat": "figure", "name": "ג׳ון וורנוק", "desc": "Adobe ו-PostScript (1982)" },
-    { "cat": "figure", "name": "טרנר וויטד", "desc": "Ray Tracing (1980)" },
-
-    { "cat": "topic", "name": "Mass Customization", "desc": "ייצור המוני של פריטים שכל אחד שונה מעט, בזכות תכנון וייצור ממוחשבים" },
-    { "cat": "topic", "name": "Voxel-based design", "desc": "ייצוג גוף כרשת ״פיקסלים תלת-ממדיים״" },
-    { "cat": "topic", "name": "Solid Modeling ו-CSG", "desc": "ייצוג גופים באמצעות פעולות בוליאניות" },
-    { "cat": "topic", "name": "Wireframe, Surface ו-Solid", "desc": "שלושה דורות של ייצוג גיאומטרי ב-CAD" },
-    { "cat": "topic", "name": "תקני קבצים: DXF, IGES ו-STEP", "desc": "איך תוכנות CAD שונות מדברות זו עם זו" },
-    { "cat": "topic", "name": "היסטוריית ה-CNC", "desc": "שורשי הייצור הממוחשב משנות ה-50" },
-    { "cat": "topic", "name": "Digital Fabrication", "desc": "מקובץ דיגיטלי לאובייקט פיזי" },
-
-    { "cat": "tool", "name": "SketchUp Web", "desc": "מודלינג תלת-ממדי מהיר בדפדפן" },
-    { "cat": "tool", "name": "AutoCAD Web", "desc": "גרסת הדפדפן של AutoCAD" },
-    { "cat": "tool", "name": "Blender", "desc": "מודלינג, אנימציה ורינדור בקוד פתוח" },
-    { "cat": "tool", "name": "QGIS", "desc": "מערכת מידע גיאוגרפי, ניתוח מפות ושכבות" },
-    { "cat": "tool", "name": "GIMP", "desc": "עריכת תמונות רסטר" },
-    { "cat": "tool", "name": "Inkscape", "desc": "גרפיקה וקטורית" },
-    { "cat": "tool", "name": "Photopea", "desc": "עורך תמונות בדפדפן" },
-    { "cat": "tool", "name": "Google Earth Pro", "desc": "תצלומי אוויר והקשר אתר" }
+    {
+      "id": "f01",
+      "cat": "figure",
+      "name": "Douglas Engelbart",
+      "desc": "ממציא העכבר למחשב",
+      "nameHe": "דאגלס אנגלברט"
+    },
+    {
+      "id": "f02",
+      "cat": "figure",
+      "name": "Buckminster Fuller",
+      "desc": "מפתח הכיפה הגיאודזית",
+      "nameHe": "בקמינסטר פולר"
+    },
+    {
+      "id": "f03",
+      "cat": "figure",
+      "name": "William J. Mitchell",
+      "desc": "MIT, The Logic of Architecture (1990)",
+      "nameHe": "וויליאם ג׳יי מיטשל"
+    },
+    {
+      "id": "f04",
+      "cat": "figure",
+      "name": "Steve Jobs",
+      "desc": "ה-GUI, Macintosh (1984) ופיקסאר",
+      "nameHe": "סטיב ג׳ובס"
+    },
+    {
+      "id": "f06",
+      "cat": "figure",
+      "name": "Richard Rogers & Renzo Piano",
+      "desc": "מרכז פומפידו (1977) ואדריכלות היי-טק",
+      "nameHe": "ריצ׳רד רוג׳רס ורנצו פיאנו"
+    },
+    {
+      "id": "f07",
+      "cat": "figure",
+      "name": "Steven A. Coons",
+      "desc": "Coons Patches, משטחים חלקים (שנות ה-60)",
+      "nameHe": "סטיבן קונס"
+    },
+    {
+      "id": "f08",
+      "cat": "figure",
+      "name": "William Fetter",
+      "desc": "טבע את המונח Computer Graphics (1960)",
+      "nameHe": "וויליאם פטר"
+    },
+    {
+      "id": "f09",
+      "cat": "figure",
+      "name": "Herbert B. Voelcker",
+      "desc": "אבי המידול התלת-ממדי באדריכלות",
+      "nameHe": "הרברט פלקר"
+    },
+    {
+      "id": "f11",
+      "cat": "figure",
+      "name": "J. C. R. Licklider",
+      "desc": "Man-Computer Symbiosis (1960), מימון ARPA",
+      "nameHe": "ג׳יי.סי.אר. ליקליידר"
+    },
+    {
+      "id": "f12",
+      "cat": "figure",
+      "name": "Charles M. Eastman",
+      "desc": "Building Description System, הבסיס הרעיוני ל-BIM",
+      "nameHe": "צ׳אק איסטמן"
+    },
+    {
+      "id": "f13",
+      "cat": "figure",
+      "name": "John Warnock",
+      "desc": "Adobe ו-PostScript (1982)",
+      "nameHe": "ג׳ון וורנוק"
+    },
+    {
+      "id": "f14",
+      "cat": "figure",
+      "name": "Turner Whitted",
+      "desc": "Ray Tracing (1980)",
+      "nameHe": "טרנר וויטד"
+    },
+    {
+      "id": "t01",
+      "cat": "topic",
+      "name": "Mass Customization",
+      "desc": "ייצור המוני של פריטים שכל אחד שונה מעט, בזכות תכנון וייצור ממוחשבים"
+    },
+    {
+      "id": "t02",
+      "cat": "topic",
+      "name": "Voxel-based design",
+      "desc": "ייצוג גוף כרשת ״פיקסלים תלת-ממדיים״"
+    },
+    {
+      "id": "t03",
+      "cat": "topic",
+      "name": "התפתחות המקלדת למחשב",
+      "desc": ""
+    },
+    {
+      "id": "t04",
+      "cat": "topic",
+      "name": "טכנולוגיית מסכי המגע (Touch)",
+      "desc": ""
+    },
+    {
+      "id": "t05",
+      "cat": "topic",
+      "name": "הDNA של קובץ DXF",
+      "desc": "פורמט לתקשורת בין תוכנות וכלי ייצור"
+    },
+    {
+      "id": "t08",
+      "cat": "topic",
+      "name": "קבצי PDF",
+      "desc": ""
+    },
+    {
+      "id": "t06",
+      "cat": "topic",
+      "name": "היסטוריית ה-CNC",
+      "desc": "שורשי הייצור הממוחשב משנות ה-50"
+    },
+    {
+      "id": "t07",
+      "cat": "topic",
+      "name": "Digital Fabrication",
+      "desc": "מקובץ דיגיטלי לאובייקט פיזי"
+    },
+    {
+      "id": "k01",
+      "cat": "tool",
+      "name": "SketchUp Web",
+      "desc": "מודלינג תלת-ממדי מהיר בדפדפן"
+    },
+    {
+      "id": "k02",
+      "cat": "tool",
+      "name": "AutoCAD Web",
+      "desc": "גרסת הדפדפן של AutoCAD"
+    },
+    {
+      "id": "k03",
+      "cat": "tool",
+      "name": "Blender",
+      "desc": "מודלינג, אנימציה ורינדור בקוד פתוח"
+    },
+    {
+      "id": "k04",
+      "cat": "tool",
+      "name": "QGIS",
+      "desc": "מערכת מידע גיאוגרפי, ניתוח מפות ושכבות"
+    },
+    {
+      "id": "k05",
+      "cat": "tool",
+      "name": "GIMP",
+      "desc": "עריכת תמונות רסטר"
+    },
+    {
+      "id": "k06",
+      "cat": "tool",
+      "name": "Inkscape",
+      "desc": "גרפיקה וקטורית"
+    },
+    {
+      "id": "k07",
+      "cat": "tool",
+      "name": "Photopea",
+      "desc": "עורך תמונות בדפדפן"
+    },
+    {
+      "id": "k08",
+      "cat": "tool",
+      "name": "Google Earth Pro",
+      "desc": "תצלומי אוויר והקשר אתר"
+    }
   ]
 }

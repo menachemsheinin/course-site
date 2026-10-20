@@ -167,10 +167,40 @@ button.chip[aria-pressed='true'] { background: var(--cc); color: var(--on-cc); b
 input.search { font: inherit; width: 100%; padding: 9px 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); color: var(--text); margin-block: 6px; }
 .item { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
 .item .n { font-weight: 500; }
-.item.taken .n { text-decoration: line-through; color: var(--muted); }
+.item.taken .n { color: var(--muted); }
 .btn { display: inline-block; background: var(--cc); color: var(--on-cc); padding: 8px 16px; border-radius: var(--radius); text-decoration: none; font-weight: 700; }
 .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
 .grid a.card { text-decoration: none; color: inherit; border-top: 4px solid var(--cc); transition: border-color .15s; }
 .grid a.card:hover { border-color: var(--text); }
 .card .t { font-weight: 700; display: block; }
 .card .d { color: var(--muted); font-size: .9rem; }
+
+/* שיבוץ חי לנושאי פרזנטציה */
+.item { flex-wrap: wrap; align-items: flex-start; }
+.item .ibody { flex: 1; min-width: 200px; }
+.item .iside { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.item .by { font-size: .9rem; color: var(--ok); margin-top: 2px; }
+button.mini { font: inherit; font-size: .85rem; border: 1px solid var(--line); background: var(--surface); color: var(--text); padding: 3px 14px; border-radius: 999px; cursor: pointer; }
+button.mini:hover:not(:disabled) { border-color: var(--text); }
+button.mini.pick { background: var(--cc); color: var(--on-cc); border-color: var(--cc); font-weight: 700; }
+button.mini:disabled { opacity: .5; cursor: default; }
+.claimform { flex-basis: 100%; background: var(--cc-soft); border-radius: var(--radius); padding: 10px 12px; margin-top: 6px; }
+.claimform .frow { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.claimform input { font: inherit; padding: 7px 10px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); color: var(--text); flex: 1; min-width: 160px; }
+.claimform .ferr { color: #b3261e; font-size: .9rem; min-height: 1.2em; margin-top: 4px; }
+
+/* אייקון קטן לדף הניהול (למרצה) */
+h2.withicon { display: flex; justify-content: space-between; align-items: center; }
+.adm-link { color: var(--muted); opacity: .45; display: inline-flex; padding: 4px; border-radius: var(--radius); }
+.adm-link:hover, .adm-link:focus-visible { opacity: 1; color: var(--text); background: var(--cc-soft); }
+
+/* לוח תאריכי הפרזנטציות */
+.slots { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); margin: 8px 0 14px; }
+.slotcard { background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--cc); border-radius: var(--radius); padding: 8px 12px; }
+.slotcard.full { border-top-color: var(--muted); }
+.slotcard.past { opacity: .55; }
+.slotcard .sh { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.slotcard .ss { font-size: .88rem; margin-top: 4px; line-height: 1.35; }
+.claimform select { font: inherit; padding: 7px 10px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); color: var(--text); }
+
+.slots { align-items: start; }
