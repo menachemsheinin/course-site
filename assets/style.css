@@ -329,3 +329,26 @@ h2.withicon { display: flex; justify-content: space-between; align-items: center
 }
 .half .dsub { min-height: 3.2em; }
 .half .dnext { min-height: calc(3 * 1.6 * .92rem + 20px); }
+
+/* ---------- מועדי הגשה וטיימר ---------- */
+.cd { font-variant-numeric: tabular-nums; font-weight: 800; white-space: nowrap; }
+.cd.urgent { color: #b3261e; }
+.cd.closed { opacity: .7; }
+.dl-box { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin: 8px 0 14px; padding: 10px 16px; background: var(--cc-soft); border-inline-start: 6px solid var(--cc); border-radius: var(--radius); }
+.dl-box .cd-ico { color: var(--cc); display: inline-flex; }
+.dl-box .dl-left { margin-inline-start: auto; font-size: 1.15rem; }
+.cdchip { position: absolute; top: 18px; inset-inline-end: 18px; display: inline-flex; align-items: center; gap: 7px; padding: 5px 12px; border-radius: 999px; background: rgba(0,0,0,.28); border: 1px solid rgba(255,255,255,.3); font-size: .85rem; z-index: 1; }
+.cdchip .cd-ico { display: inline-flex; }
+.cdchip .cd.urgent { color: #ffd0cb; }
+@media (max-width: 700px) { .cdchip { top: 14px; inset-inline-end: 14px; font-size: .8rem; } }
+.cdchip { background: #f6e3a1; color: #3a2a05; border: 0; font-weight: 700; box-shadow: 0 2px 10px rgba(0,0,0,.3); padding: 6px 14px; }
+.cdchip .cd { font-size: 1.05em; }
+.cdchip .cd.urgent { color: #a3180f; }
+.cdchip { background: #e8dcc2; color: #3b2e1c; box-shadow: none; border: 1px solid rgba(0,0,0,.12); font-weight: 600; }
+.cdchip .cd { font-weight: 800; }
+.cdchip .cd.urgent { color: #9a2a1f; }
+.cdchip { background: rgba(255,255,255,.14); color: #f4ece0; border: 1px solid rgba(255,255,255,.28); backdrop-filter: blur(2px); font-weight: 500; }
+.cdchip .cd.urgent { color: #ffc9c2; }
+.cdchip { background: rgba(236,205,150,.2); color: #f6e2bb; border: 1px solid rgba(236,205,150,.75); font-weight: 600; }
+.cdchip .cd { color: #fff1d3; }
+.cdchip .cd.urgent { color: #ffc2a8; }

@@ -86,6 +86,50 @@
     top.replaceChildren(h('div', { class: 'wrap' }, kids));
   }
 
+  /* ---------- מועדי הגשה וטיימר ---------- */
+
+  const TIMER_ICON = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9.5 2.5h5"/></svg>';
+  const deadlineOf = (item) => (item && item.deadline ? new Date(item.deadline) : null);
+  const pad2 = (x) => String(x).padStart(2, '0');
+  function leftText(ms) {
+    if (ms <= 0) return 'ההגשה נסגרה';
+    const t = Math.floor(ms / 1000), d = Math.floor(t / 86400);
+    const clock = pad2(Math.floor((t % 86400) / 3600)) + ':' + pad2(Math.floor((t % 3600) / 60)) + ':' + pad2(t % 60);
+    return (d ? (d === 1 ? 'יום ' : d + ' ימים ') : '') + clock;
+  }
+  // אלמנט טיימר: מתעדכן כל שנייה על ידי tick()
+  function countdown(date) {
+    const el = h('span', { class: 'cd', dir: 'rtl' });
+    el.dataset.dl = date.toISOString();
+    return el;
+  }
+  function tick() {
+    const now = Date.now();
+    document.querySelectorAll('.cd[data-dl]').forEach((el) => {
+      const ms = new Date(el.dataset.dl).getTime() - now;
+      el.textContent = leftText(ms);
+      el.classList.toggle('urgent', ms > 0 && ms < 86400000);
+      el.classList.toggle('closed', ms <= 0);
+    });
+  }
+  let tickTimer = null;
+  function startTick() {
+    clearInterval(tickTimer); tickTimer = null;
+    if (!document.querySelector('.cd[data-dl]')) return;
+    tick();
+    tickTimer = setInterval(tick, 1000);
+  }
+  const fmtDeadline = (d) => d.toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'numeric', year: 'numeric', timeZone: 'Asia/Jerusalem' })
+    + ' בשעה ' + d.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Jerusalem' });
+  // מועד ההגשה הקרוב ביותר שעוד לא עבר: { n, date } או null
+  function nextDeadline() {
+    const now = Date.now();
+    return ((D.exercises || {}).items || [])
+      .map((i) => ({ n: i.n, date: deadlineOf(i) }))
+      .filter((x) => x.date && x.date.getTime() > now)
+      .sort((a, b) => a.date - b.date)[0] || null;
+  }
+
   /* ---------- דף הבית ---------- */
 
   // שרטוטי הרקע של דף הפתיחה: כל מחרוזת היא קו אחד שמצטייר בהדרגה
@@ -129,6 +173,13 @@
     return el;
   }
 
+  function deadlineChip(nd) {
+    const ico = h('span', { class: 'cd-ico' });
+    ico.innerHTML = TIMER_ICON;
+    return h('span', { class: 'cdchip', title: 'מועד הגשה: ' + fmtDeadline(nd.date) }, ico,
+      h('span', { class: 'cd-lbl' }, 'תרגיל ' + nd.n + ' · נותר'), countdown(nd.date));
+  }
+
   function home() {
     const c = D.course;
     const out = [];
@@ -142,6 +193,7 @@
         KEYS.map((k) => {
           const nx = nextFor(k);
           return h('a', { class: 'half k-' + k, href: '#/' + k },
+            k === 'app' && nextDeadline() ? deadlineChip(nextDeadline()) : null,
             h('span', { class: 'kicker' }, 'קורס ' + LETTER[k]),
             h('span', { class: 'dname' }, LABEL[k]),
             h('span', { class: 'dsub' }, c.courses[k].short),
@@ -711,7 +763,16 @@
     stopPolling();
     refresh().then(() => { if (live) pollTimer = setInterval(() => { if (!document.hidden) refresh(); }, 30000); });
     const exTitle = (((D.exercises || {}).items || []).find((x) => x.n === ex) || {}).title;
-    return [subtabs, h('div', { class: 'ex-head' }, h('h1', {}, 'תרגיל ' + ex), reqBtn), exTitle ? h('p', { class: 'ex-title' }, exTitle) : null, info, form, grid];
+    const dl = deadlineOf(((D.exercises || {}).items || []).find((x) => x.n === ex));
+    let dlBox = null;
+    if (dl) {
+      const ico = h('span', { class: 'cd-ico' });
+      ico.innerHTML = TIMER_ICON;
+      dlBox = h('div', { class: 'dl-box' }, ico,
+        h('span', { class: 'dl-txt' }, h('b', {}, 'מועד הגשה: '), fmtDeadline(dl)),
+        h('span', { class: 'dl-left' }, 'נותר: ', countdown(dl)));
+    }
+    return [subtabs, h('div', { class: 'ex-head' }, h('h1', {}, 'תרגיל ' + ex), reqBtn), exTitle ? h('p', { class: 'ex-title' }, exTitle) : null, dlBox, info, form, grid];
   }
 
   /* ---------- הנחיות לתרגיל הפרזנטציה (קורס רקע) ---------- */
@@ -757,6 +818,7 @@
     header(k, tabPage);
     const view = k ? PAGES[k][page] : home;
     app.replaceChildren(...view(k, parts[2]).filter(Boolean));
+    startTick();
 
     const tab = k && TABS[k].find(([p]) => p === tabPage);
     document.title = (k ? LABEL[k] + (page ? ' · ' + (page === 'guide' ? 'הנחיות' : tab[1]) : '') + ' · ' : '') + D.course.title;
