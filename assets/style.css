@@ -354,3 +354,25 @@ h2.withicon { display: flex; justify-content: space-between; align-items: center
 .cdchip .cd.urgent { color: #ffc2a8; }
 .gal-time { display: block; font-size: .78rem; color: var(--muted); }
 .closed-note { margin: 10px 0 14px; padding: 10px 16px; border-inline-start: 6px solid #b3261e; background: var(--surface); border-radius: var(--radius); font-weight: 700; }
+
+/* ---------- צ'ק ליסט פקודות ---------- */
+.card-btn { text-align: start; font: inherit; color: inherit; cursor: pointer; width: 100%; }
+.card-prog { display: block; margin-top: 6px; font-size: .85rem; font-weight: 700; color: var(--cc); }
+.cl-card { width: min(720px, 100%); }
+.cl-top { display: flex; align-items: center; gap: 12px; position: sticky; top: -10px; background: var(--surface); padding: 8px 0; z-index: 1; border-bottom: 1px solid var(--line); }
+.cl-count { font-weight: 800; white-space: nowrap; }
+.cl-bar { flex: 1; height: 10px; background: var(--cc-soft); border-radius: 99px; overflow: hidden; }
+.cl-bar span { display: block; height: 100%; width: 0; background: var(--cc); transition: width .25s; }
+.cl-group h3 { margin: 1.3em 0 .3em; color: var(--cc); }
+.cl-item { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; padding: 4px 0; border-bottom: 1px solid var(--line); }
+.cl-row { display: flex; flex: 1; align-items: center; gap: 10px; cursor: pointer; min-width: 0; flex-wrap: wrap; }
+.cl-row input { width: 20px; height: 20px; accent-color: var(--cc); flex: none; }
+.cl-name { font-weight: 700; }
+.cl-he { color: var(--muted); font-size: .9rem; }
+.cl-key { font-size: .78rem; background: var(--cc-soft); padding: 0 7px; border-radius: 4px; }
+.cl-q { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--cc); background: transparent; color: var(--cc); font: inherit; font-weight: 800; cursor: pointer; flex: none; }
+.cl-q[aria-expanded='true'] { background: var(--cc); color: var(--on-cc); }
+.cl-how { flex-basis: 100%; background: var(--cc-soft); border-radius: var(--radius); padding: 8px 12px; margin: 2px 0 6px; font-size: .95rem; }
+.cl-how a { display: block; margin-top: 4px; }
+.ltr { direction: ltr; unicode-bidi: isolate; white-space: nowrap; }
+.ltr-list { white-space: nowrap; }

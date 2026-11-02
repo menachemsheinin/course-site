@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const FILES = ['course', 'sessions', 'presentations', 'tools', 'exercises', 'materials', 'autocad'];
+  const FILES = ['course', 'sessions', 'presentations', 'tools', 'exercises', 'materials', 'autocad', 'checklist'];
   const D = {};
   const app = document.getElementById('app');
   const top = document.getElementById('top');
@@ -20,6 +20,33 @@
     exercises: '#/app/exercises', schedule: '#/', tools: '#/app/tools',
   };
 
+  // טקסט עברי עם קטעים לטיניים (פקודות, קיצורים, מספרים):
+  // כל פריט לטיני (גם רב-מילים, כמו Object Snap Settings) נעטף כיחידה משמאל לימין.
+  // רשימה של פריטים מופרדים בפסיק או ב-"/" (למשל "Z, Enter, E") נשארת בשורה אחת ונקראת בסדר עברי:
+  // הפריט הראשון הכי קרוב לטקסט שלפניו. ראו .ltr ו-.ltr-list ב-CSS.
+  const ITEM = "[A-Za-z0-9]+°?(?:(?: ?[+:'-] ?| )[A-Za-z0-9]+°?)*";
+  const LATIN_LIST = new RegExp(ITEM + '(?:(?: ?, ?| ?/ ?)' + ITEM + ')*', 'g');
+  function bidiNodes(str) {
+    if (!/[֐-׿]/.test(str) || !/[A-Za-z]/.test(str)) return [document.createTextNode(str)];
+    const out = [];
+    let last = 0;
+    const item = (t) => { const sp = document.createElement('span'); sp.className = 'ltr'; sp.textContent = t; return sp; };
+    for (const m of str.matchAll(LATIN_LIST)) {
+      if (m.index > last) out.push(document.createTextNode(str.slice(last, m.index)));
+      const parts = m[0].split(/( ?, ?| ?\/ ?)/);
+      if (parts.length === 1) out.push(item(parts[0]));
+      else {
+        const wrap = document.createElement('span');
+        wrap.className = 'ltr-list';
+        parts.forEach((t, n) => wrap.append(n % 2 ? document.createTextNode(t) : item(t)));
+        out.push(wrap);
+      }
+      last = m.index + m[0].length;
+    }
+    if (last < str.length) out.push(document.createTextNode(str.slice(last)));
+    return out;
+  }
+
   function h(tag, attrs, ...kids) {
     const el = document.createElement(tag);
     for (const k in attrs || {}) {
@@ -32,7 +59,7 @@
     }
     for (const kid of kids.flat(Infinity)) {
       if (kid == null || kid === false) continue;
-      el.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
+      if (kid.nodeType) el.append(kid); else el.append(...bidiNodes(String(kid)));
     }
     return el;
   }
@@ -532,6 +559,68 @@
     return out;
   }
 
+  /* ---------- צ'ק ליסט פקודות אוטוקאד (אישי, נשמר בדפדפן בלבד) ---------- */
+
+  const CL_KEY = 'acChecklist.v1';
+  const clLoad = () => { try { return new Set(JSON.parse(localStorage.getItem(CL_KEY) || '[]')); } catch (e) { return new Set(); } };
+  const clSave = (set) => { try { localStorage.setItem(CL_KEY, JSON.stringify([...set])); } catch (e) { /* אחסון חסום: ההתקדמות לא תישמר */ } };
+  const clItems = () => ((D.checklist || {}).groups || []).flatMap((g) => g.items);
+  function checklistProgress() {
+    const all = clItems(), done = clLoad();
+    return all.length ? all.filter((i) => done.has(i.name)).length + ' מתוך ' + all.length + ' סומנו' : '';
+  }
+
+  function openChecklist() {
+    const C = D.checklist || { groups: [] };
+    const done = clLoad();
+    const total = clItems().length;
+    const bar = h('div', { class: 'cl-bar' }, h('span', {}));
+    const count = h('span', { class: 'cl-count' });
+    const upd = () => {
+      const n = clItems().filter((i) => done.has(i.name)).length;
+      count.textContent = n + ' מתוך ' + total;
+      bar.firstChild.style.width = (total ? (100 * n) / total : 0) + '%';
+      const lbl = document.querySelector('.card-prog');
+      if (lbl) lbl.textContent = n + ' מתוך ' + total + ' סומנו';
+    };
+    const boxes = [];
+    const groups = C.groups.map((g) =>
+      h('section', { class: 'cl-group' },
+        h('h3', {}, g.title),
+        g.items.map((it) => {
+          const cb = h('input', { type: 'checkbox', checked: done.has(it.name) });
+          cb.addEventListener('change', () => { cb.checked ? done.add(it.name) : done.delete(it.name); clSave(done); upd(); });
+          boxes.push([cb, it]);
+          const how = h('div', { class: 'cl-how', hidden: true }, it.how || 'ההסבר יתווסף בהמשך.',
+            it.video ? h('a', { href: it.video, target: '_blank', rel: 'noopener' }, 'לסרטון ההדרכה') : null);
+          const q = h('button', { class: 'cl-q', type: 'button', 'aria-expanded': 'false', 'aria-label': 'הסבר: ' + it.name, title: 'הסבר קצר' }, '?');
+          q.addEventListener('click', () => { how.hidden = !how.hidden; q.setAttribute('aria-expanded', String(!how.hidden)); });
+          return h('div', { class: 'cl-item' },
+            h('label', { class: 'cl-row' }, cb, h('span', { class: 'cl-name' }, it.name), h('span', { class: 'cl-he' }, it.he || ''),
+              it.key ? h('code', { class: 'cl-key', dir: 'ltr' }, it.key) : null),
+            q, how);
+        })));
+    const reset = h('button', { class: 'mini', type: 'button', onclick: () => {
+      if (!confirm('לאפס את כל הסימונים?')) return;
+      done.clear(); clSave(done); boxes.forEach(([cb]) => { cb.checked = false; }); upd();
+    } }, 'איפוס');
+    const root = h('div', { class: 'modal', role: 'dialog', 'aria-modal': 'true', 'aria-label': C.title || 'צ׳ק ליסט' });
+    const prev = document.body.style.overflow;
+    const shut = () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = prev; root.remove(); };
+    const onKey = (e) => { if (e.key === 'Escape') shut(); };
+    root.append(h('div', { class: 'modal-card cl-card' },
+      h('button', { class: 'modal-x', type: 'button', 'aria-label': 'סגירה', onclick: shut }, '✕'),
+      h('h2', {}, C.title || 'צ׳ק ליסט'),
+      h('p', { class: 'muted small', style: 'margin-top:0' }, C.intro || ''),
+      h('div', { class: 'cl-top' }, count, bar, reset),
+      ...groups));
+    root.addEventListener('click', (e) => { if (e.target === root) shut(); });
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    document.body.append(root);
+    upd();
+  }
+
   function materials(k, sub) {
     if (sub === 'autocad') return autocad();
     const items = (D.materials && D.materials.items) || [];
@@ -539,9 +628,12 @@
       h('h1', {}, 'חומרי למידה'),
       h('div', { class: 'grid' },
         items.map((i) =>
-          h('a', { class: 'card', href: i.url, target: i.url.startsWith('#') ? null : '_blank', rel: 'noopener' },
-            h('span', { class: 't' }, i.title), h('span', { class: 'd' }, i.desc || '')
-          )
+          i.popup === 'checklist'
+            ? h('button', { class: 'card card-btn', type: 'button', onclick: openChecklist },
+              h('span', { class: 't' }, i.title), h('span', { class: 'd' }, i.desc || ''), h('span', { class: 'card-prog' }, checklistProgress()))
+            : h('a', { class: 'card', href: i.url, target: i.url.startsWith('#') ? null : '_blank', rel: 'noopener' },
+              h('span', { class: 't' }, i.title), h('span', { class: 'd' }, i.desc || '')
+            )
         )
       ),
     ];
