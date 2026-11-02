@@ -121,6 +121,8 @@
   }
   const fmtDeadline = (d) => d.toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'numeric', year: 'numeric', timeZone: 'Asia/Jerusalem' })
     + ' בשעה ' + d.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Jerusalem' });
+  // שעת העלאה: "2.11, 14:32" בשעון ישראל
+  const fmtUpload = (ts) => new Date(ts).toLocaleString('he-IL', { day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Jerusalem' });
   // מועד ההגשה הקרוב ביותר שעוד לא עבר: { n, date } או null
   function nextDeadline() {
     const now = Date.now();
@@ -295,7 +297,8 @@
   const CLAIMS_API = '/api/claims';
   let pollTimer = null;
   let memToken = null;
-  const stopPolling = () => { clearInterval(pollTimer); pollTimer = null; };
+  let closeTimer = null;
+  const stopPolling = () => { clearInterval(pollTimer); pollTimer = null; clearTimeout(closeTimer); closeTimer = null; };
 
   // מזהה אנונימי של הדפדפן: מאפשר לשלשה לשחרר או להחליף את הבחירה שלה, ורק לה
   function myToken() {
@@ -592,6 +595,7 @@
     limit: 'אפשר להעלות עד 3 תמונות. מחקו אחת כדי להחליף.',
     code: 'הקוד שגוי.',
     busy: 'השרת עמוס. נסו שוב בעוד רגע.',
+    closed: 'ההגשה נסגרה. לא ניתן להעלות עבודות נוספות.',
     'not-image': 'נא לבחור קובץ תמונה.',
     decode: 'לא הצלחנו לקרוא את התמונה. נסו לשמור אותה כ-JPG או PNG.',
     'too-big': 'התמונה כבדה מדי גם אחרי כיווץ. נסו תמונה קטנה יותר.',
@@ -650,6 +654,8 @@
   // עמוד "תרגילים": לשונית לכל תרגיל (1-5) עם דרישות, העלאה וגלריה
   function exercises(k, sub) {
     const ex = Math.min(EXERCISE_COUNT, Math.max(1, parseInt(sub, 10) || 1));
+    const dl = deadlineOf(((D.exercises || {}).items || []).find((x) => x.n === ex));
+    const isClosed = () => !!dl && Date.now() >= dl.getTime();
     let items = [];
     let live = null; // null: טוען · true: זמין · false: לא זמין
     let busy = false;
@@ -679,6 +685,7 @@
       h('div', { class: 'upl-row' }, names, caption, code, send),
       msg);
     form.hidden = true;
+    const closedNote = h('div', { class: 'closed-note', role: 'status', hidden: true }, 'ההגשה נסגרה. לא ניתן להעלות עבודות נוספות.');
 
     let previewUrl = '';
     file.addEventListener('change', () => {
@@ -732,11 +739,12 @@
 
     // ---- גלריה ----
     function draw() {
-      form.hidden = !live;
+      form.hidden = !live || isClosed();
+      closedNote.hidden = !(live && isClosed());
       info.textContent = live === false ? 'הגלריה לא זמינה כרגע.' : live && items.length ? items.length + ' תוצרים · לחצו על תמונה להגדלה' : '';
       const lb = items.map((it) => (it.pdf
-        ? { src: imgUrl(it.id, 'full'), title: it.name, caption: it.caption, openUrl: imgUrl(it.id, 'pdf'), openLabel: 'פתיחת ה-PDF המלא' }
-        : { src: imgUrl(it.id, 'full'), title: it.name, caption: it.caption, openUrl: imgUrl(it.id, 'full') }));
+        ? { src: imgUrl(it.id, 'full'), title: it.name, caption: [it.caption, 'הועלה ' + fmtUpload(it.ts)].filter(Boolean).join(' · '), openUrl: imgUrl(it.id, 'pdf'), openLabel: 'פתיחת ה-PDF המלא' }
+        : { src: imgUrl(it.id, 'full'), title: it.name, caption: [it.caption, 'הועלה ' + fmtUpload(it.ts)].filter(Boolean).join(' · '), openUrl: imgUrl(it.id, 'full') }));
       grid.replaceChildren(...(live && !items.length
         ? [h('p', { class: 'muted' }, 'עדיין לא הועלו תוצרים. לחצו על ״העלאת התרגיל״ כדי להיות הראשונים.')]
         : items.map((it, i) =>
@@ -745,6 +753,7 @@
               h('img', { src: imgUrl(it.id, 'thumb'), alt: it.name + (it.caption ? ': ' + it.caption : ''), loading: 'lazy', width: it.w, height: it.h }),
               it.pdf ? h('span', { class: 'pdf-badge' }, 'PDF') : null),
             h('figcaption', {}, h('strong', {}, it.name), it.caption ? h('span', {}, it.caption) : null,
+              h('span', { class: 'gal-time' }, 'הועלה ' + fmtUpload(it.ts)),
               it.mine ? h('button', { class: 'mini', type: 'button', onclick: () => remove(it) }, 'מחיקה') : null)))));
     }
     async function remove(it) {
@@ -761,9 +770,10 @@
     }
 
     stopPolling();
+    // ברגע שהזמן נגמר הטופס נסגר בלי רענון (setTimeout מוגבל לכ-24 ימים)
+    if (dl && !isClosed() && dl.getTime() - Date.now() < 2000000000) closeTimer = setTimeout(draw, dl.getTime() - Date.now() + 500);
     refresh().then(() => { if (live) pollTimer = setInterval(() => { if (!document.hidden) refresh(); }, 30000); });
     const exTitle = (((D.exercises || {}).items || []).find((x) => x.n === ex) || {}).title;
-    const dl = deadlineOf(((D.exercises || {}).items || []).find((x) => x.n === ex));
     let dlBox = null;
     if (dl) {
       const ico = h('span', { class: 'cd-ico' });
@@ -772,7 +782,7 @@
         h('span', { class: 'dl-txt' }, h('b', {}, 'מועד הגשה: '), fmtDeadline(dl)),
         h('span', { class: 'dl-left' }, 'נותר: ', countdown(dl)));
     }
-    return [subtabs, h('div', { class: 'ex-head' }, h('h1', {}, 'תרגיל ' + ex), reqBtn), exTitle ? h('p', { class: 'ex-title' }, exTitle) : null, dlBox, info, form, grid];
+    return [subtabs, h('div', { class: 'ex-head' }, h('h1', {}, 'תרגיל ' + ex), reqBtn), exTitle ? h('p', { class: 'ex-title' }, exTitle) : null, dlBox, closedNote, info, form, grid];
   }
 
   /* ---------- הנחיות לתרגיל הפרזנטציה (קורס רקע) ---------- */

@@ -17,6 +17,20 @@ function scoped(store, prefix) {
     delete: (k) => store.delete(prefix + k),
   };
 }
+// מועד ההגשה של כל תרגיל נקרא מ-data/exercises.json של האתר עצמו (מקור אחד לאמת), עם מטמון קצר
+let dlCache = { at: 0, map: null };
+async function deadlineOf(origin, ex) {
+  if (!dlCache.map || Date.now() - dlCache.at > 60000) {
+    try {
+      const r = await fetch(origin + '/data/exercises.json', { cache: 'no-store' });
+      const j = await r.json();
+      const map = {};
+      for (const it of j.items || []) { const t = it.deadline ? Date.parse(it.deadline) : NaN; if (!Number.isNaN(t)) map[it.n] = t; }
+      dlCache = { at: Date.now(), map };
+    } catch (e) { /* נכשלה הקריאה: משתמשים במטמון האחרון, ואם אין, ההעלאה נשארת פתוחה */ }
+  }
+  return (dlCache.map && dlCache.map[ex]) || null;
+}
 const exOf = (v) => { const n = Number(v == null || v === '' ? 1 : v); return Number.isInteger(n) && n >= 1 && n <= EXERCISES ? n : null; };
 
 export default async (req) => {
@@ -59,6 +73,7 @@ export default async (req) => {
         if (!full || !thumb || typeof full === 'string' || typeof thumb === 'string') return reply(400, { error: 'type' });
         const r = await upload(scoped(base, 'ex' + ex + '/'), {
           token,
+          deadline: await deadlineOf(url.origin, ex),
           name: fd.get('name'), caption: fd.get('caption'), w: fd.get('w'), h: fd.get('h'), code: fd.get('code'),
           full: new Uint8Array(await full.arrayBuffer()), thumb: new Uint8Array(await thumb.arrayBuffer()),
           pdf: pdf && typeof pdf !== 'string' ? new Uint8Array(await pdf.arrayBuffer()) : null,

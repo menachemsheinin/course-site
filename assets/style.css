@@ -352,3 +352,5 @@ h2.withicon { display: flex; justify-content: space-between; align-items: center
 .cdchip { background: rgba(236,205,150,.2); color: #f6e2bb; border: 1px solid rgba(236,205,150,.75); font-weight: 600; }
 .cdchip .cd { color: #fff1d3; }
 .cdchip .cd.urgent { color: #ffc2a8; }
+.gal-time { display: block; font-size: .78rem; color: var(--muted); }
+.closed-note { margin: 10px 0 14px; padding: 10px 16px; border-inline-start: 6px solid #b3261e; background: var(--surface); border-radius: var(--radius); font-weight: 700; }

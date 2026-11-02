@@ -72,8 +72,9 @@ export async function getImage(store, id, size) {
   return { status: 200, body: new Uint8Array(data), contentType: size === 'pdf' ? 'application/pdf' : 'image/jpeg' };
 }
 
-// upload: { token, name, caption, w, h, code, full: Uint8Array, thumb: Uint8Array }
+// upload: { token, name, caption, w, h, code, full: Uint8Array, thumb: Uint8Array, deadline?: ms }
 export async function upload(store, up, env = {}, now = Date.now()) {
+  if (up.deadline && now >= up.deadline) return json(403, { error: 'closed' }); // אחרי מועד ההגשה
   if (!up.token || !TOKEN_RE.test(up.token)) return json(400, { error: 'token' });
   if (env.CLASS_CODE && !sameSecret(String(up.code || ''), String(env.CLASS_CODE))) return json(403, { error: 'code' });
   const name = cleanText(up.name, 2, 80);
