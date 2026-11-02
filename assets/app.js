@@ -621,21 +621,31 @@
     upd();
   }
 
+  // חומרי למידה: לשונית לכל תוכנה. #/app/materials/<תוכנה>; הקורס המצולם: #/app/materials/autocad-course
   function materials(k, sub) {
-    if (sub === 'autocad') return autocad();
-    const items = (D.materials && D.materials.items) || [];
+    if (sub === 'autocad-course') return autocad();
+    const tabs = (D.materials && D.materials.tabs) || [];
+    const cur = tabs.find((t) => t.id === sub) || tabs[0];
+    if (!cur) return [h('h1', {}, 'חומרי למידה')];
+    const card = (i) => {
+      if (i.popup === 'checklist') {
+        return h('button', { class: 'card card-btn', type: 'button', onclick: openChecklist },
+          h('span', { class: 't' }, i.title), h('span', { class: 'd' }, i.desc || ''), h('span', { class: 'card-prog' }, checklistProgress()));
+      }
+      const isFile = !!i.file;
+      return h('a', Object.assign({ class: 'card' + (isFile ? ' card-file' : '') },
+        isFile ? { href: i.file, download: '' } : { href: i.url, target: i.url.startsWith('#') ? null : '_blank', rel: 'noopener' }),
+        h('span', { class: 't' }, i.title),
+        h('span', { class: 'd' }, i.desc || ''),
+        isFile ? h('span', { class: 'card-prog' }, '⬇ הורדה' + (i.size ? ' · ' + i.size : '')) : null);
+    };
     return [
       h('h1', {}, 'חומרי למידה'),
-      h('div', { class: 'grid' },
-        items.map((i) =>
-          i.popup === 'checklist'
-            ? h('button', { class: 'card card-btn', type: 'button', onclick: openChecklist },
-              h('span', { class: 't' }, i.title), h('span', { class: 'd' }, i.desc || ''), h('span', { class: 'card-prog' }, checklistProgress()))
-            : h('a', { class: 'card', href: i.url, target: i.url.startsWith('#') ? null : '_blank', rel: 'noopener' },
-              h('span', { class: 't' }, i.title), h('span', { class: 'd' }, i.desc || '')
-            )
-        )
-      ),
+      h('nav', { class: 'subtabs', 'aria-label': 'תוכנות' },
+        tabs.map((t) => h('a', { href: '#/app/materials/' + t.id, class: t.id === cur.id ? 'on' : '' }, t.title))),
+      (cur.items || []).length
+        ? h('div', { class: 'grid' }, cur.items.map(card))
+        : h('p', { class: 'muted' }, cur.empty || 'חומרי הלמידה יתווספו בהמשך.'),
     ];
   }
 
@@ -663,9 +673,9 @@
       secs.forEach((sec) => { sec.hidden = !sec.querySelector('.vcard:not([hidden])'); });
     });
     const nav = h('div', { class: 'vnav' }, A.sections.map((s, n) =>
-      h('a', { href: '#/app/materials/autocad', onclick: (e) => { e.preventDefault(); secs[n].scrollIntoView({ behavior: 'smooth' }); } }, s.emoji + ' ' + s.title)));
+      h('a', { href: '#/app/materials/autocad-course', onclick: (e) => { e.preventDefault(); secs[n].scrollIntoView({ behavior: 'smooth' }); } }, s.emoji + ' ' + s.title)));
     return [
-      h('p', {}, h('a', { href: '#/app/materials' }, '← חומרי למידה')),
+      h('p', {}, h('a', { href: '#/app/materials/autocad' }, '← חומרי למידה: אוטוקאד')),
       h('h1', {}, A.title),
       h('p', { class: 'muted' }, A.intro + ' · ' + cards.length + ' סרטונים'),
       search, nav, ...secs,

@@ -1,14 +1,37 @@
 {
-  "items": [
+  "tabs": [
     {
-      "title": "קורס אוטוקאד",
-      "desc": "סרטוני הדרכה ביוטיוב, לפי נושאים: 54 סרטונים, עם חיפוש",
-      "url": "#/app/materials/autocad"
+      "id": "autocad",
+      "title": "אוטוקאד",
+      "items": [
+        {
+          "title": "קורס אוטוקאד",
+          "desc": "סרטוני הדרכה ביוטיוב, לפי נושאים: 54 סרטונים, עם חיפוש",
+          "url": "#/app/materials/autocad-course"
+        },
+        {
+          "title": "צ'ק ליסט פקודות אוטוקאד",
+          "desc": "סימון אישי של הפקודות שלמדתם",
+          "popup": "checklist"
+        },
+        {
+          "title": "קובץ בסיס לתחילת עבודה",
+          "desc": "תבנית DWG מוכנה: שכבות, סגנונות ומידות",
+          "file": "materials/autocad/Template.dwg",
+          "size": "150KB"
+        },
+        {
+          "title": "בלוקים ופונטים (תיקיית דרייב)",
+          "desc": "ספריית בלוקים שימושיים (DWG) ותיקיית פונטים כולל עברית (ZIP). נפתח בגוגל דרייב.",
+          "url": "https://drive.google.com/drive/folders/1_fXbxFTS1wOhadyrowkegTDvYm9O0adX?usp=sharing"
+        }
+      ]
     },
     {
-      "title": "צ'ק ליסט פקודות אוטוקאד",
-      "desc": "סימון אישי של הפקודות שלמדתם",
-      "popup": "checklist"
+      "id": "rhino",
+      "title": "ריינו",
+      "items": [],
+      "empty": "חומרי הלמידה לריינו יתווספו בהמשך."
     }
   ]
 }

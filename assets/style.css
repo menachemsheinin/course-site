@@ -376,3 +376,4 @@ h2.withicon { display: flex; justify-content: space-between; align-items: center
 .cl-how a { display: block; margin-top: 4px; }
 .ltr { direction: ltr; unicode-bidi: isolate; white-space: nowrap; }
 .ltr-list { white-space: nowrap; }
+.card-file .card-prog { color: var(--cc); }
