@@ -145,6 +145,7 @@ ul.biblio li { margin-bottom: .4em; }
 .rn { font-size: 1.6rem; font-weight: 800; color: var(--cc); line-height: 1; }
 .rd { font-variant-numeric: tabular-nums; color: var(--muted); }
 .rt { font-weight: 500; }
+.rt .rec { display: inline-block; margin-top: .3rem; font-size: .9rem; font-weight: 600; }
 .rt .sub { display: block; font-weight: 400; color: var(--muted); font-size: .9rem; }
 @media (max-width: 560px) {
   .row { grid-template-columns: 2.2rem 1fr; }

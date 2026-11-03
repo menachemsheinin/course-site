@@ -309,7 +309,8 @@
           x.presentations ? h('span', { class: 'tag' }, x.presentations + ' פרזנטציות') : null,
           x.exercise ? h('span', { class: 'tag' }, exLabel(x)) : null,
           x.summary ? h('span', { class: 'sub' }, x.summary) : null,
-          x.note ? h('span', { class: 'sub' }, x.note) : null
+          x.note ? h('span', { class: 'sub' }, x.note) : null,
+          x.recording ? h('a', { class: 'rec', href: x.recording, target: '_blank', rel: 'noopener' }, '▶ הקלטת השיעור') : null
         )
       );
     });
