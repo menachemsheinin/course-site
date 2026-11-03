@@ -28,9 +28,9 @@
       "example": { "src": "assets/ex1-example.jpg", "caption": "דוגמה לגיליון מוגש: 3 חלופות × 3 שלבים = 9 סמלים" },
       "requirements": []
     },
-    { "n": 2, "requirements": [] },
-    { "n": 3, "requirements": [] },
-    { "n": 4, "requirements": [] },
-    { "n": 5, "requirements": [] }
+    { "n": 2, "upload": false, "requirements": [] },
+    { "n": 3, "upload": false, "requirements": [] },
+    { "n": 4, "upload": false, "requirements": [] },
+    { "n": 5, "upload": false, "requirements": [] }
   ]
 }

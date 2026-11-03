@@ -714,6 +714,7 @@
     code: 'הקוד שגוי.',
     busy: 'השרת עמוס. נסו שוב בעוד רגע.',
     closed: 'ההגשה נסגרה. לא ניתן להעלות עבודות נוספות.',
+    notopen: 'ההעלאה לתרגיל זה עדיין לא נפתחה.',
     'not-image': 'נא לבחור קובץ תמונה.',
     decode: 'לא הצלחנו לקרוא את התמונה. נסו לשמור אותה כ-JPG או PNG.',
     'too-big': 'התמונה כבדה מדי גם אחרי כיווץ. נסו תמונה קטנה יותר.',
@@ -773,6 +774,7 @@
   function exercises(k, sub) {
     const ex = Math.min(EXERCISE_COUNT, Math.max(1, parseInt(sub, 10) || 1));
     const dl = deadlineOf(((D.exercises || {}).items || []).find((x) => x.n === ex));
+    const isLocked = ((D.exercises || {}).items || []).some((x) => x.n === ex && x.upload === false);
     const isClosed = () => !!dl && Date.now() >= dl.getTime();
     let items = [];
     let live = null; // null: טוען · true: זמין · false: לא זמין
@@ -857,8 +859,9 @@
 
     // ---- גלריה ----
     function draw() {
-      form.hidden = !live || isClosed();
-      closedNote.hidden = !(live && isClosed());
+      form.hidden = !live || isLocked || isClosed();
+      closedNote.textContent = isLocked ? 'ההעלאה לתרגיל זה תיפתח בהמשך.' : 'ההגשה נסגרה. לא ניתן להעלות עבודות נוספות.';
+      closedNote.hidden = !(live && (isLocked || isClosed()));
       info.textContent = live === false ? 'הגלריה לא זמינה כרגע.' : live && items.length ? items.length + ' תוצרים · לחצו על תמונה להגדלה' : '';
       const lb = items.map((it) => (it.pdf
         ? { src: imgUrl(it.id, 'full'), title: it.name, caption: [it.caption, 'הועלה ' + fmtUpload(it.ts)].filter(Boolean).join(' · '), openUrl: imgUrl(it.id, 'pdf'), openLabel: 'פתיחת ה-PDF המלא' }
