@@ -18,7 +18,7 @@
         "summary": "ממסופוטמיה ועד Sketchpad: כלי השרטוט והסיפור המקביל של המחשב.",
         "presentations": 3
       },
-      "app": { "topic": "AutoCAD: כלי שרטוט נפוצים, שרטוט תכנית אדריכלית", "exercise": 2, "exNote": "פתיחה" }
+      "app": { "topic": "AutoCAD: הגדרות עמוד וייצוא להדפסה" }
     },
     {
       "n": 3, "date": "2026-11-10",
@@ -27,7 +27,7 @@
         "summary": "הטלה אורתוגונלית, קואורדינטות קרטזיות, Vector מול Raster, WCS ו-UCS.",
         "presentations": 3
       },
-      "app": { "topic": "AutoCAD: הגדרות עמוד וייצוא להדפסה", "exercise": 2, "exNote": "המשך" }
+      "app": { "topic": "AutoCAD: כלי שרטוט נפוצים, שרטוט תכנית אדריכלית", "exercise": 2, "exNote": "פתיחה" }
     },
     {
       "n": 4, "date": "2026-11-17",
