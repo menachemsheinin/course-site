@@ -627,17 +627,33 @@
     const tabs = (D.materials && D.materials.tabs) || [];
     const cur = tabs.find((t) => t.id === sub) || tabs[0];
     if (!cur) return [h('h1', {}, 'חומרי למידה')];
+    const ICONS = {
+      course: '<path d="M4 6h16v10H4z"/><path d="M8 20h8M12 16v4"/><path d="M10.5 9.5v3l3-1.5z"/>',
+      video: '<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9v6l5-3z"/>',
+      checklist: '<path d="M9 6h11M9 12h11M9 18h11"/><path d="M3.5 6l1.3 1.3L7 5M3.5 12l1.3 1.3L7 11M3.5 18l1.3 1.3L7 17"/>',
+      file: '<path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5"/><path d="M9 14h7M9 17h5"/>',
+      folder: '<path d="M3 6h6l2 2h10v11H3z"/>',
+    };
+    const KIND = { course: 'קורס', video: 'סרטון', checklist: 'צ׳ק ליסט', file: 'הורדה', folder: 'תיקיית דרייב' };
+    const badge = (i) => {
+      const ic = h('span', { class: 'mi mi-' + (i.icon || 'file') });
+      ic.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[i.icon] || ICONS.file) + '</svg>';
+      return ic;
+    };
+    const kind = (i) => i.icon && KIND[i.icon] ? h('span', { class: 'mk' }, KIND[i.icon]) : null;
     const card = (i) => {
       if (i.popup === 'checklist') {
-        return h('button', { class: 'card card-btn', type: 'button', onclick: openChecklist },
-          h('span', { class: 't' }, i.title), h('span', { class: 'd' }, i.desc || ''), h('span', { class: 'card-prog' }, checklistProgress()));
+        return h('button', { class: 'card card-btn mcard', type: 'button', onclick: openChecklist },
+          badge(i), h('span', { class: 'mb' }, kind(i), h('span', { class: 't' }, i.title), h('span', { class: 'd' }, i.desc || ''), h('span', { class: 'card-prog' }, checklistProgress())));
       }
       const isFile = !!i.file;
-      return h('a', Object.assign({ class: 'card' + (isFile ? ' card-file' : '') },
+      return h('a', Object.assign({ class: 'card mcard' + (isFile ? ' card-file' : '') },
         isFile ? { href: i.file, download: '' } : { href: i.url, target: i.url.startsWith('#') ? null : '_blank', rel: 'noopener' }),
+        i.yt ? h('span', { class: 'mthumb' }, h('img', { src: 'https://img.youtube.com/vi/' + i.yt + '/hqdefault.jpg', alt: '', loading: 'lazy' }), badge(i)) : badge(i),
+        h('span', { class: 'mb' }, kind(i),
         h('span', { class: 't' }, i.title),
         h('span', { class: 'd' }, i.desc || ''),
-        isFile ? h('span', { class: 'card-prog' }, '⬇ הורדה' + (i.size ? ' · ' + i.size : '')) : null);
+        isFile ? h('span', { class: 'card-prog' }, '⬇ הורדה' + (i.size ? ' · ' + i.size : '')) : null));
     };
     return [
       h('h1', {}, 'חומרי למידה'),

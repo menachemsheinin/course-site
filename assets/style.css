@@ -377,3 +377,22 @@ h2.withicon { display: flex; justify-content: space-between; align-items: center
 .ltr { direction: ltr; unicode-bidi: isolate; white-space: nowrap; }
 .ltr-list { white-space: nowrap; }
 .card-file .card-prog { color: var(--cc); }
+
+/* חומרי למידה: זיהוי חזותי לכל קישור */
+.mcard { display: flex; gap: 14px; align-items: flex-start; text-decoration: none; color: inherit; }
+.mcard .mb { flex: 1; min-width: 0; }
+.mi { flex: none; width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; background: var(--cc-soft); color: var(--cc); }
+.mi svg { width: 26px; height: 26px; }
+.mk { display: block; font-size: .72rem; font-weight: 700; letter-spacing: .02em; color: var(--cc); margin-bottom: 2px; }
+.mi-video { background: #f3dcd8; color: #b3382c; }
+.mi-folder { background: #e6ecdd; color: #55703a; }
+.mi-file { background: #e1e8f0; color: #34506f; }
+.mi-checklist { background: #efe6d3; color: #8a6a25; }
+.mthumb { flex: none; position: relative; width: 118px; aspect-ratio: 16/10; border-radius: 10px; overflow: hidden; background: #222; }
+.mthumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.mthumb .mi { position: absolute; inset: 50% auto auto 50%; transform: translate(-50%, -50%); width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,.92); }
+.mthumb .mi svg { width: 20px; height: 20px; }
+@media (prefers-color-scheme: dark) { .mi-video { background: #3a2321; color: #e58a80; } .mi-folder { background: #25301c; color: #a9c58a; } .mi-file { background: #1f2a36; color: #94adc9; } .mi-checklist { background: #33291a; color: #dcbc72; } }
+.mcard:has(.mthumb) { flex-direction: column; gap: 10px; }
+.mcard:has(.mthumb) .mthumb { width: 100%; }
+.mcard:has(.mthumb) .mb { width: 100%; }

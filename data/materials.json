@@ -7,23 +7,34 @@
         {
           "title": "קורס אוטוקאד",
           "desc": "סרטוני הדרכה ביוטיוב, לפי נושאים: 54 סרטונים, עם חיפוש",
-          "url": "#/app/materials/autocad-course"
+          "url": "#/app/materials/autocad-course",
+          "icon": "course"
+        },
+        {
+          "title": "הגדרת דף, התאמת קנ״מ וייצוא",
+          "desc": "סרטון: הכנת דף, קנה מידה וייצוא לקובץ מתוך אוטוקאד",
+          "url": "https://www.youtube.com/watch?v=TSvuHw4PTzc",
+          "icon": "video",
+          "yt": "TSvuHw4PTzc"
         },
         {
           "title": "צ'ק ליסט פקודות אוטוקאד",
           "desc": "סימון אישי של הפקודות שלמדתם",
-          "popup": "checklist"
+          "popup": "checklist",
+          "icon": "checklist"
         },
         {
           "title": "קובץ בסיס לתחילת עבודה",
           "desc": "תבנית DWG מוכנה: שכבות, סגנונות ומידות",
           "file": "materials/autocad/Template.dwg",
-          "size": "150KB"
+          "size": "150KB",
+          "icon": "file"
         },
         {
           "title": "בלוקים ופונטים (תיקיית דרייב)",
           "desc": "ספריית בלוקים שימושיים (DWG) ותיקיית פונטים כולל עברית (ZIP). נפתח בגוגל דרייב.",
-          "url": "https://drive.google.com/drive/folders/1_fXbxFTS1wOhadyrowkegTDvYm9O0adX?usp=sharing"
+          "url": "https://drive.google.com/drive/folders/1_fXbxFTS1wOhadyrowkegTDvYm9O0adX?usp=sharing",
+          "icon": "folder"
         }
       ]
     },
