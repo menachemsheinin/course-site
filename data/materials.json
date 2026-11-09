@@ -50,6 +50,19 @@
       "title": "ריינו",
       "items": [],
       "empty": "חומרי הלמידה לריינו יתווספו בהמשך."
+    },
+    {
+      "id": "sketchup",
+      "title": "סקצאפ",
+      "items": [
+        {
+          "title": "מודל פלורנטין",
+          "desc": "קובץ SketchUp (SKP) להורדה",
+          "file": "materials/sketchup/florentin.skp",
+          "size": "69KB",
+          "icon": "file"
+        }
+      ]
     }
   ]
 }
