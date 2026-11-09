@@ -48,8 +48,14 @@
     {
       "id": "rhino",
       "title": "ריינו",
-      "items": [],
-      "empty": "חומרי הלמידה לריינו יתווספו בהמשך."
+      "items": [
+        {
+          "title": "קורס ריינו",
+          "desc": "סרטוני הדרכה ביוטיוב לתחילת עבודה בתוכנת Rhino",
+          "url": "materials/rhino/course.html",
+          "icon": "course"
+        }
+      ]
     },
     {
       "id": "sketchup",
