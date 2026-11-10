@@ -209,6 +209,10 @@
       h('span', { class: 'cd-lbl' }, 'תרגיל ' + nd.n + ' · נותר'), countdown(nd.date));
   }
 
+  const zoomLink = (cls) => (D.course.zoom && D.course.zoom.url
+    ? h('a', { class: cls, href: D.course.zoom.url, target: '_blank', rel: 'noopener' }, '▶ ' + (D.course.zoom.label || 'הצטרפות לשיעור ב-Zoom'))
+    : null);
+
   function home() {
     const c = D.course;
     const out = [];
@@ -216,7 +220,8 @@
       h('div', { class: 'stage-head' },
         logo(),
         h('h1', {}, c.title),
-        h('p', { class: 'dim' }, h('span', {}, c.subtitle || ''))
+        h('p', { class: 'dim' }, h('span', {}, c.subtitle || '')),
+        zoomLink('zoom-btn')
       ),
       h('div', { class: 'halves' },
         KEYS.map((k) => {
@@ -258,7 +263,8 @@
       out.push(
         h('div', { class: 'nextbox' },
           h('b', {}, 'המפגש הבא · ' + fmt(nx.date)), ' · ', nx[k].topic, ' ',
-          link('לכל המפגשים', '#/' + k + '/schedule')
+          link('לכל המפגשים', '#/' + k + '/schedule'),
+          zoomLink('zoom-inline')
         )
       );
     }
