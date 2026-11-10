@@ -43,6 +43,19 @@
           "text": "סכמה גושנית תלת-ממדית שממחישה את המורפולוגיה הצורנית ו/או את החלוקה הפרוגרמטית של הפרויקט."
         }
       ],
+      "examplesTitle": "דוגמאות לסכמה גושנית",
+      "examples": [
+        { "src": "assets/ex2/scheme-01.jpg" },
+        { "src": "assets/ex2/scheme-02.jpg" },
+        { "src": "assets/ex2/scheme-03.jpg" },
+        { "src": "assets/ex2/scheme-04.jpg" },
+        { "src": "assets/ex2/scheme-05.jpg" },
+        { "src": "assets/ex2/scheme-06.jpg" },
+        { "src": "assets/ex2/scheme-07.jpg" },
+        { "src": "assets/ex2/scheme-08.jpg" },
+        { "src": "assets/ex2/scheme-09.jpg" },
+        { "src": "assets/ex2/scheme-10.jpg" }
+      ],
       "slots": [
         { "id": "plan", "label": "א. תכנית קומת קרקע", "hint": "PDF (מומלץ) או תמונה, עד 10MB" },
         { "id": "scheme", "label": "ב. סכמה גושנית תלת-ממדית", "hint": "PDF או תמונה, עד 10MB" }

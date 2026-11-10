@@ -747,7 +747,7 @@
   function openRequirements(n) {
     const item = ((D.exercises || {}).items || []).find((x) => x.n === n) || {};
     const reqs = item.requirements || [];
-    const hasDetails = !!(item.goal || item.deliverable || (item.steps || []).length || reqs.length || item.example);
+    const hasDetails = !!(item.goal || item.deliverable || (item.steps || []).length || reqs.length || item.example || (item.examples || []).length);
     const root = h('div', { class: 'modal', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'דרישות תרגיל ' + n });
     const shut = () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = prev; root.remove(); };
     const onKey = (e) => { if (e.key === 'Escape' && !document.querySelector('.lb')) shut(); }; // Esc סוגר קודם את ההגדלה
@@ -768,6 +768,13 @@
           h('button', { class: 'req-example', type: 'button', 'aria-label': 'הגדלת הדוגמה', onclick: () => GalleryTools.openLightbox([{ src: item.example.src, title: 'דוגמה לתרגיל ' + n, caption: item.example.caption }], 0) },
             h('img', { src: item.example.src, alt: item.example.caption || 'דוגמה' })),
           item.example.caption ? h('p', { class: 'small muted', style: 'margin-top:.4em' }, item.example.caption + ' · לחצו להגדלה') : null)
+        : null,
+      (item.examples || []).length
+        ? h('div', { class: 'req-block' }, h('h3', {}, item.examplesTitle || 'דוגמאות'),
+          h('div', { class: 'req-exs' }, item.examples.map((e, i) =>
+            h('button', { class: 'req-ex', type: 'button', 'aria-label': 'הגדלת דוגמה ' + (i + 1), onclick: () => GalleryTools.openLightbox(item.examples.map((x, j) => ({ src: x.src, title: (item.examplesTitle || 'דוגמה') + ' ' + (j + 1), caption: x.caption })), i) },
+              h('img', { src: e.src, alt: 'דוגמה ' + (i + 1), loading: 'lazy' })))),
+          h('p', { class: 'small muted', style: 'margin-top:.4em' }, 'לחצו על תמונה להגדלה'))
         : null,
       reqs.length ? h('ul', { class: 'clean' }, reqs.map((r) => h('li', {}, r))) : null,
       !hasDetails ? h('p', { class: 'muted' }, 'דרישות התרגיל יימסרו בהמשך.') : null,
