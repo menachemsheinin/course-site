@@ -774,7 +774,8 @@
           h('div', { class: 'req-exs' }, item.examples.map((e, i) =>
             h('button', { class: 'req-ex', type: 'button', 'aria-label': 'הגדלת דוגמה ' + (i + 1), onclick: () => GalleryTools.openLightbox(item.examples.map((x, j) => ({ src: x.src, title: (item.examplesTitle || 'דוגמה') + ' ' + (j + 1), caption: x.caption })), i) },
               h('img', { src: e.src, alt: 'דוגמה ' + (i + 1), loading: 'lazy' })))),
-          h('p', { class: 'small muted', style: 'margin-top:.4em' }, 'לחצו על תמונה להגדלה'))
+          h('p', { class: 'small muted', style: 'margin-top:.4em' }, 'לחצו על תמונה להגדלה'),
+          item.examplesNote ? h('p', { class: 'small muted' }, item.examplesNote) : null)
         : null,
       reqs.length ? h('ul', { class: 'clean' }, reqs.map((r) => h('li', {}, r))) : null,
       !hasDetails ? h('p', { class: 'muted' }, 'דרישות התרגיל יימסרו בהמשך.') : null,
