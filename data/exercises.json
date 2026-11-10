@@ -54,7 +54,16 @@
         { "src": "assets/ex2/scheme-07.jpg" },
         { "src": "assets/ex2/scheme-08.jpg" },
         { "src": "assets/ex2/scheme-09.jpg" },
-        { "src": "assets/ex2/scheme-10.jpg" }
+        { "src": "assets/ex2/scheme-10.jpg" },
+        { "src": "assets/ex2/scheme-11.jpg" },
+        { "src": "assets/ex2/scheme-12.jpg" },
+        { "src": "assets/ex2/scheme-13.jpg" },
+        { "src": "assets/ex2/scheme-14.jpg" },
+        { "src": "assets/ex2/scheme-15.jpg" },
+        { "src": "assets/ex2/scheme-16.jpg" },
+        { "src": "assets/ex2/scheme-17.jpg" },
+        { "src": "assets/ex2/scheme-18.jpg" },
+        { "src": "assets/ex2/scheme-19.jpg" }
       ],
       "slots": [
         { "id": "plan", "label": "א. תכנית קומת קרקע", "hint": "PDF (מומלץ) או תמונה, עד 10MB" },
