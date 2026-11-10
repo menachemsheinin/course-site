@@ -728,6 +728,9 @@
     'pdf-size': 'קובץ ה-PDF גדול מ-4MB. כווצו אותו ונסו שוב.',
     pdf: 'לא הצלחנו לקרוא את קובץ ה-PDF. בדקו שהוא תקין.',
     'pdf-lib': 'טעינת קורא ה-PDF נכשלה. נסו שוב.',
+    slot: 'סעיף לא מוכר.',
+    chunk: 'העלאת הקובץ נכשלה. נסו שוב.',
+    'file-size': 'הקובץ גדול מ-10MB.',
   };
   const EXERCISE_COUNT = 5;
   async function galleryApi(method, body, ex) {
@@ -782,6 +785,9 @@
     const ex = Math.min(EXERCISE_COUNT, Math.max(1, parseInt(sub, 10) || 1));
     const dl = deadlineOf(((D.exercises || {}).items || []).find((x) => x.n === ex));
     const isLocked = ((D.exercises || {}).items || []).some((x) => x.n === ex && x.upload === false);
+    const exItem = ((D.exercises || {}).items || []).find((x) => x.n === ex) || {};
+    const slots = Array.isArray(exItem.slots) && exItem.slots.length ? exItem.slots : null; // סעיפים מובנים (למשל תכנית וסכמה)
+    const slotLabel = (id) => ((slots || []).find((x) => x.id === id) || {}).label || '';
     const isClosed = () => !!dl && Date.now() >= dl.getTime();
     let items = [];
     let live = null; // null: טוען · true: זמין · false: לא זמין
@@ -804,13 +810,89 @@
     const preview = h('img', { class: 'upl-prev', alt: '', hidden: true });
     const msg = h('div', { class: 'upl-msg', role: 'status' });
     const send = h('button', { class: 'btn', type: 'button' }, 'העלאה');
+    // ---- העלאה לפי סעיפים: קובץ אחד לכל סעיף (עד 10MB), עם החלפה והסרה ----
+    const SLOT_MAX = 10000000, CHUNK = 3500000;
+    const hex = (n) => [...crypto.getRandomValues(new Uint8Array(n))].map((b) => b.toString(16).padStart(2, '0')).join('');
+    function slotBox(sl) {
+      const inp = h('input', { type: 'file', accept: 'image/*,application/pdf,.pdf', 'aria-label': 'קובץ: ' + sl.label });
+      inp.hidden = true;
+      const cur = h('div', { class: 'slot-cur' });
+      const m = h('div', { class: 'upl-msg', role: 'status' });
+      const pick = h('button', { class: 'btn', type: 'button' }, 'בחירת קובץ');
+      const del = h('button', { class: 'mini', type: 'button' }, 'הסרה');
+      del.hidden = true;
+      let sbusy = false;
+      const mine = () => items.find((it) => it.mine && it.slot === sl.id);
+      const box = h('div', { class: 'slot' },
+        h('h3', {}, sl.label), sl.hint ? h('p', { class: 'muted small', style: 'margin:.2em 0 .6em' }, sl.hint) : null,
+        cur, h('div', { class: 'upl-row' }, pick, del, inp), m);
+      box.update = () => {
+        const it = mine();
+        cur.replaceChildren(...(it ? [h('img', { class: 'slot-prev', src: imgUrl(it.id, 'thumb'), alt: sl.label }),
+          h('span', { class: 'small' }, 'הועלה ' + fmtUpload(it.ts) + (it.pdf ? ' · PDF' : ''))] : [h('span', { class: 'muted small' }, 'עדיין לא הועלה')]));
+        pick.textContent = it ? 'החלפת קובץ' : 'בחירת קובץ';
+        del.hidden = !it;
+      };
+      pick.addEventListener('click', () => inp.click());
+      del.addEventListener('click', async () => {
+        const it = mine();
+        if (!it || sbusy || !confirm('להסיר את ״' + sl.label + '״?')) return;
+        sbusy = true; m.className = 'upl-msg'; m.textContent = 'מסיר…';
+        try { await galleryApi('POST', { action: 'delete', id: it.id }, ex); m.textContent = ''; } catch (e) { m.textContent = 'ההסרה נכשלה. נסו שוב.'; }
+        sbusy = false; await refresh();
+      });
+      inp.addEventListener('change', async () => {
+        const f = inp.files[0]; inp.value = '';
+        if (!f || sbusy) return;
+        const nm = names.value.trim();
+        m.className = 'upl-msg';
+        if (nm.length < 2) { m.textContent = GALLERY_ERRORS.name; names.focus(); return; }
+        sbusy = true; pick.disabled = del.disabled = true; m.textContent = 'מכווץ ומעלה…';
+        try {
+          const p = await GalleryTools.prepare(f, { pdfMax: SLOT_MAX });
+          const fd = new FormData();
+          fd.append('name', nm); fd.append('caption', ''); fd.append('slot', sl.id);
+          fd.append('w', p.w); fd.append('h', p.h);
+          if (code.value.trim()) fd.append('code', code.value.trim());
+          fd.append('full', p.full, 'full.jpg'); fd.append('thumb', p.thumb, 'thumb.jpg');
+          if (p.pdf) { // PDF גדול נשלח בקטעים, כי בקשה אחת מוגבלת ל-6MB
+            const uid = hex(8), parts = Math.ceil(p.pdf.size / CHUNK);
+            for (let i = 0; i < parts; i++) {
+              m.textContent = 'מעלה קובץ… ' + (i + 1) + '/' + parts;
+              const cf = new FormData();
+              cf.append('action', 'chunk'); cf.append('uid', uid); cf.append('idx', i);
+              if (code.value.trim()) cf.append('code', code.value.trim());
+              cf.append('data', p.pdf.slice(i * CHUNK, (i + 1) * CHUNK), 'part');
+              const cr = await galleryApi('POST', cf, ex);
+              if (!cr.ok) { const e = (cr.data || {}).error; if (e === 'code') code.hidden = false; throw new Error(GALLERY_ERRORS[e] ? e : 'chunk'); }
+            }
+            fd.append('pdfUid', uid); fd.append('pdfParts', parts);
+          }
+          const r = await galleryApi('POST', fd, ex);
+          if (r.ok) { mem.set('galName', nm); m.className = 'upl-msg ok'; m.textContent = 'הקובץ הועלה.'; await refresh(); }
+          else {
+            const e = (r.data || {}).error;
+            if (e === 'code') code.hidden = false;
+            m.textContent = GALLERY_ERRORS[e] || (r.status === 413 ? GALLERY_ERRORS.size : 'ההעלאה נכשלה. נסו שוב.');
+          }
+        } catch (e) {
+          m.textContent = e.message === 'pdf-size' ? 'קובץ ה-PDF גדול מ-10MB.' : (GALLERY_ERRORS[e.message] || 'ההעלאה נכשלה. נסו שוב.');
+        }
+        sbusy = false; pick.disabled = del.disabled = false;
+      });
+      return box;
+    }
+    const slotBoxes = slots ? slots.map(slotBox) : [];
+
     // סרגל נפתח: סגור כברירת מחדל כדי שהגלריה תהיה במרכז, ונפתח בלחיצה
     const form = h('details', { class: 'upl' },
       h('summary', {}, h('span', { class: 'upl-plus', 'aria-hidden': 'true' }, '+'), 'העלאת התרגיל'),
-      h('p', { class: 'muted small', style: 'margin-top:0' }, 'הגיליון להגשה: PDF (עד 4MB) או תמונה JPG/PNG, ושם. בגלריה יוצג העמוד הראשון.'),
-      h('div', { class: 'upl-row' }, file, preview),
-      h('div', { class: 'upl-row' }, names, caption, code, send),
-      msg);
+      h('p', { class: 'muted small', style: 'margin-top:0' }, slots
+        ? 'כתבו שם או שמות, ובכל סעיף בחרו קובץ PDF או תמונה JPG/PNG (עד 10MB). אפשר להחליף או להסיר בכל עת.'
+        : 'הגיליון להגשה: PDF (עד 4MB) או תמונה JPG/PNG, ושם. בגלריה יוצג העמוד הראשון.'),
+      slots ? h('div', { class: 'upl-row' }, names, code) : h('div', { class: 'upl-row' }, file, preview),
+      slots ? h('div', { class: 'slots' }, slotBoxes) : h('div', { class: 'upl-row' }, names, caption, code, send),
+      slots ? null : msg);
     form.hidden = true;
     const closedNote = h('div', { class: 'closed-note', role: 'status', hidden: true }, 'ההגשה נסגרה. לא ניתן להעלות עבודות נוספות.');
 
@@ -869,10 +951,11 @@
       form.hidden = !live || isLocked || isClosed();
       closedNote.textContent = isLocked ? 'ההעלאה לתרגיל זה תיפתח בהמשך.' : 'ההגשה נסגרה. לא ניתן להעלות עבודות נוספות.';
       closedNote.hidden = !(live && (isLocked || isClosed()));
+      slotBoxes.forEach((b) => b.update());
       info.textContent = live === false ? 'הגלריה לא זמינה כרגע.' : live && items.length ? items.length + ' תוצרים · לחצו על תמונה להגדלה' : '';
       const lb = items.map((it) => (it.pdf
-        ? { src: imgUrl(it.id, 'full'), title: it.name, caption: [it.caption, 'הועלה ' + fmtUpload(it.ts)].filter(Boolean).join(' · '), openUrl: imgUrl(it.id, 'pdf'), openLabel: 'פתיחת ה-PDF המלא' }
-        : { src: imgUrl(it.id, 'full'), title: it.name, caption: [it.caption, 'הועלה ' + fmtUpload(it.ts)].filter(Boolean).join(' · '), openUrl: imgUrl(it.id, 'full') }));
+        ? { src: imgUrl(it.id, 'full'), title: it.name, caption: [slotLabel(it.slot), it.caption, 'הועלה ' + fmtUpload(it.ts)].filter(Boolean).join(' · '), openUrl: imgUrl(it.id, 'pdf'), openLabel: 'פתיחת ה-PDF המלא' }
+        : { src: imgUrl(it.id, 'full'), title: it.name, caption: [slotLabel(it.slot), it.caption, 'הועלה ' + fmtUpload(it.ts)].filter(Boolean).join(' · '), openUrl: imgUrl(it.id, 'full') }));
       grid.replaceChildren(...(live && !items.length
         ? [h('p', { class: 'muted' }, 'עדיין לא הועלו תוצרים. לחצו על ״העלאת התרגיל״ כדי להיות הראשונים.')]
         : items.map((it, i) =>
@@ -880,7 +963,7 @@
             h('button', { class: 'gal-btn', type: 'button', 'aria-label': 'הגדלה: ' + it.name, onclick: () => GalleryTools.openLightbox(lb, i) },
               h('img', { src: imgUrl(it.id, 'thumb'), alt: it.name + (it.caption ? ': ' + it.caption : ''), loading: 'lazy', width: it.w, height: it.h }),
               it.pdf ? h('span', { class: 'pdf-badge' }, 'PDF') : null),
-            h('figcaption', {}, h('strong', {}, it.name), it.caption ? h('span', {}, it.caption) : null,
+            h('figcaption', {}, h('strong', {}, it.name), it.slot ? h('span', { class: 'gal-slot' }, slotLabel(it.slot)) : null, it.caption ? h('span', {}, it.caption) : null,
               h('span', { class: 'gal-time' }, 'הועלה ' + fmtUpload(it.ts)),
               it.mine ? h('button', { class: 'mini', type: 'button', onclick: () => remove(it) }, 'מחיקה') : null)))));
     }

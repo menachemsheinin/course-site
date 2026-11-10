@@ -8,7 +8,7 @@
 
 const ID_RE = /^[a-f0-9]{12}$/;
 const TOKEN_RE = /^[A-Za-z0-9_-]{16,80}$/;
-export const LIMITS = { fullBytes: 4200000, thumbBytes: 500000, pdfBytes: 4000000, maxItems: 150, perToken: 3, maxDim: 12000 };
+export const LIMITS = { fullBytes: 4200000, thumbBytes: 500000, pdfBytes: 4000000, pdfSlotBytes: 10000000, chunkBytes: 4000000, maxChunks: 3, maxItems: 400, perToken: 3, maxDim: 12000 };
 
 const json = (status, body) => ({ status, body });
 
@@ -55,7 +55,7 @@ async function updateIndex(store, fn) {
   return { ok: false, conflict: true };
 }
 
-const publicItem = (it, hash) => ({ id: it.id, name: it.name, caption: it.caption, ts: it.ts, w: it.w, h: it.h, pdf: !!it.pdf, mine: !!hash && it.owner === hash });
+const publicItem = (it, hash) => ({ id: it.id, name: it.name, caption: it.caption, ts: it.ts, w: it.w, h: it.h, pdf: !!it.pdf, slot: it.slot || null, mine: !!hash && it.owner === hash });
 
 export async function listItems(store, token) {
   const hash = token && TOKEN_RE.test(token) ? await sha256(token) : null;
@@ -72,12 +72,55 @@ export async function getImage(store, id, size) {
   return { status: 200, body: new Uint8Array(data), contentType: size === 'pdf' ? 'application/pdf' : 'image/jpeg' };
 }
 
-// upload: { token, name, caption, w, h, code, full: Uint8Array, thumb: Uint8Array, deadline?: ms }
-export async function upload(store, up, env = {}, now = Date.now()) {
+// בדיקות משותפות להעלאה ולקטעי קובץ: נעול / אחרי מועד / טוקן / קוד כיתה
+function gate(up, env, now) {
   if (up.locked) return json(403, { error: 'notopen' }); // התרגיל עוד לא נפתח להעלאה
   if (up.deadline && now >= up.deadline) return json(403, { error: 'closed' }); // אחרי מועד ההגשה
   if (!up.token || !TOKEN_RE.test(up.token)) return json(400, { error: 'token' });
   if (env.CLASS_CODE && !sameSecret(String(up.code || ''), String(env.CLASS_CODE))) return json(403, { error: 'code' });
+  return null;
+}
+
+// קובץ גדול (עד 10MB) מועלה בקטעים של עד 4MB, כי בקשה אחת מוגבלת ל-6MB. הקטעים נשמרים זמנית.
+const UID_RE = /^[a-f0-9]{16}$/;
+const chunkKey = async (token, uid, i) => 'tmp/' + (await sha256(token)).slice(0, 16) + '/' + uid + '/' + i;
+export async function putChunk(store, up, env = {}, now = Date.now()) {
+  const bad = gate(up, env, now);
+  if (bad) return bad;
+  const i = Number(up.idx);
+  if (!UID_RE.test(String(up.uid)) || !Number.isInteger(i) || i < 0 || i >= LIMITS.maxChunks) return json(400, { error: 'chunk' });
+  if (!up.data || !up.data.length || up.data.length > LIMITS.chunkBytes) return json(413, { error: 'size' });
+  await store.set(await chunkKey(up.token, up.uid, i), up.data.buffer.slice(up.data.byteOffset, up.data.byteOffset + up.data.byteLength));
+  return json(200, { ok: true });
+}
+async function takeChunks(store, token, uid, total) {
+  const n = Number(total);
+  if (!UID_RE.test(String(uid)) || !Number.isInteger(n) || n < 1 || n > LIMITS.maxChunks) return null;
+  const parts = [];
+  for (let i = 0; i < n; i++) {
+    const d = await store.get(await chunkKey(token, uid, i), { type: 'arrayBuffer' });
+    if (!d) return null;
+    parts.push(new Uint8Array(d));
+  }
+  const out = new Uint8Array(parts.reduce((a, b) => a + b.length, 0));
+  let o = 0;
+  for (const p of parts) { out.set(p, o); o += p.length; }
+  for (let i = 0; i < n; i++) await store.delete(await chunkKey(token, uid, i));
+  return out;
+}
+
+// upload: { token, name, caption, w, h, code, full, thumb, pdf?, pdfUid?, pdfParts?, slot?, slots?, deadline?: ms }
+// slots: רשימת מזהי סעיפים של התרגיל (למשל ['plan','scheme']). אם קיימת, כל סטודנט מעלה סעיף אחד מכל סוג, וההעלאה מחליפה את הקודמת.
+export async function upload(store, up, env = {}, now = Date.now()) {
+  const bad = gate(up, env, now);
+  if (bad) return bad;
+  const slots = Array.isArray(up.slots) && up.slots.length ? up.slots : null;
+  const slot = slots ? String(up.slot || '') : null;
+  if (slots && !slots.includes(slot)) return json(400, { error: 'slot' });
+  if (slots && !up.pdf && up.pdfUid) {
+    up.pdf = await takeChunks(store, up.token, up.pdfUid, up.pdfParts);
+    if (!up.pdf) return json(400, { error: 'chunk' });
+  }
   const name = cleanText(up.name, 2, 80);
   if (!name) return json(400, { error: 'name' });
   const caption = up.caption ? cleanText(up.caption, 0, 120) : '';
@@ -87,7 +130,7 @@ export async function upload(store, up, env = {}, now = Date.now()) {
   // קובץ PDF מקורי (לא חובה): התמונה היא העמוד הראשון שלו, והוא נשמר להורדה
   const hasPdf = !!(up.pdf && up.pdf.length);
   if (hasPdf && !isPdf(up.pdf)) return json(400, { error: 'pdf' });
-  if (hasPdf && up.pdf.length > LIMITS.pdfBytes) return json(413, { error: 'pdf-size' });
+  if (hasPdf && up.pdf.length > (slots ? LIMITS.pdfSlotBytes : LIMITS.pdfBytes)) return json(413, { error: 'pdf-size' });
   const w = Math.round(Number(up.w)), h = Math.round(Number(up.h));
   if (!(w > 0 && h > 0 && w <= LIMITS.maxDim && h <= LIMITS.maxDim)) return json(400, { error: 'dimensions' });
 
@@ -97,11 +140,16 @@ export async function upload(store, up, env = {}, now = Date.now()) {
   await store.set('full/' + id, up.full.buffer.slice(up.full.byteOffset, up.full.byteOffset + up.full.byteLength));
   await store.set('thumb/' + id, up.thumb.buffer.slice(up.thumb.byteOffset, up.thumb.byteOffset + up.thumb.byteLength));
   if (hasPdf) await store.set('pdf/' + id, up.pdf.buffer.slice(up.pdf.byteOffset, up.pdf.byteOffset + up.pdf.byteLength));
-  let reason = null;
+  let reason = null, replaced = [];
   const r = await updateIndex(store, (list) => {
+    reason = null; replaced = [];
+    if (slots) { // החלפה: הסעיף הקודם של אותו סטודנט יוצא מהאינדקס
+      replaced = list.filter((x) => x.owner === hash && x.slot === slot);
+      list = list.filter((x) => !(x.owner === hash && x.slot === slot));
+    }
     if (list.length >= LIMITS.maxItems) { reason = 'full'; return null; }
-    if (list.filter((x) => x.owner === hash).length >= LIMITS.perToken) { reason = 'limit'; return null; }
-    list.push({ id, name, caption, ts: now, w, h, owner: hash, pdf: hasPdf });
+    if (!slots && list.filter((x) => x.owner === hash).length >= LIMITS.perToken) { reason = 'limit'; return null; }
+    list.push({ id, name, caption, ts: now, w, h, owner: hash, pdf: hasPdf, ...(slots ? { slot } : {}) });
     return list;
   });
   if (!r.ok) {
@@ -110,6 +158,7 @@ export async function upload(store, up, env = {}, now = Date.now()) {
     if (reason === 'limit') return json(429, { error: 'limit' });
     return json(503, { error: 'busy' });
   }
+  for (const o of replaced) { await store.delete('full/' + o.id); await store.delete('thumb/' + o.id); await store.delete('pdf/' + o.id); }
   return json(200, { ok: true, id });
 }
 

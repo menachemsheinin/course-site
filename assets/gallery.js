@@ -38,8 +38,8 @@
   }
 
   // PDF: מציירים את העמוד הראשון כתמונה (לגלריה), והקובץ המקורי נשלח להורדה
-  async function preparePdf(file) {
-    if (file.size > PDF_MAX_BYTES) throw new Error('pdf-size');
+  async function preparePdf(file, pdfMax) {
+    if (file.size > (pdfMax || PDF_MAX_BYTES)) throw new Error('pdf-size');
     const lib = await loadPdfJs();
     let canvas;
     try {
@@ -64,8 +64,10 @@
   }
 
   // מקבל קובץ תמונה או PDF ומחזיר { full, thumb, w, h, pdf? }: JPEG באיכות טובה וממוזער
-  async function prepare(file) {
-    if (isPdfFile(file)) return preparePdf(file);
+  async function prepare(file, opts) {
+    const pdfMax = opts && opts.pdfMax;
+    if (isPdfFile(file)) return preparePdf(file, pdfMax);
+    if (pdfMax && file && file.size > pdfMax) throw new Error('file-size');
     if (!file || !/^image\//.test(file.type)) throw new Error('not-image');
     let bitmap;
     try { bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' }); } catch (e) { throw new Error('decode'); }
