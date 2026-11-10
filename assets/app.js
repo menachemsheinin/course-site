@@ -812,7 +812,7 @@
 
     // ---- טופס העלאה ----
     const file = h('input', { type: 'file', accept: 'image/*,application/pdf,.pdf', 'aria-label': 'בחירת קובץ' });
-    const names = h('input', { type: 'text', maxlength: 80, placeholder: 'שם או שמות', 'aria-label': 'שם או שמות', value: mem.get('galName') });
+    const names = h('input', { type: 'text', maxlength: 80, placeholder: slots ? 'שם הסטודנט/ית' : 'שם או שמות', 'aria-label': slots ? 'שם הסטודנט/ית' : 'שם או שמות', value: slots ? '' : mem.get('galName') });
     const caption = h('input', { type: 'text', maxlength: 120, placeholder: 'כיתוב קצר (לא חובה)', 'aria-label': 'כיתוב' });
     const code = h('input', { type: 'text', maxlength: 20, placeholder: 'קוד כיתה', 'aria-label': 'קוד כיתה', style: 'max-width:9em', hidden: true });
     const preview = h('img', { class: 'upl-prev', alt: '', hidden: true });
@@ -854,7 +854,7 @@
         if (!f || sbusy) return;
         const nm = names.value.trim();
         m.className = 'upl-msg';
-        if (nm.length < 2) { m.textContent = GALLERY_ERRORS.name; names.focus(); return; }
+        if (nm.length < 2) { m.textContent = 'נא לרשום שם (לפחות 2 תווים).'; names.focus(); return; }
         sbusy = true; pick.disabled = del.disabled = true; m.textContent = 'מכווץ ומעלה…';
         try {
           const p = await GalleryTools.prepare(f, { pdfMax: SLOT_MAX });
@@ -896,7 +896,7 @@
     const form = h('details', { class: 'upl' },
       h('summary', {}, h('span', { class: 'upl-plus', 'aria-hidden': 'true' }, '+'), 'העלאת התרגיל'),
       h('p', { class: 'muted small', style: 'margin-top:0' }, slots
-        ? 'כתבו שם או שמות, ובכל סעיף בחרו קובץ PDF או תמונה JPG/PNG (עד 10MB). אפשר להחליף או להסיר בכל עת.'
+        ? 'כתבו שם, ובכל סעיף בחרו קובץ PDF או תמונה JPG/PNG (עד 10MB). אפשר להחליף או להסיר בכל עת.'
         : 'הגיליון להגשה: PDF (עד 4MB) או תמונה JPG/PNG, ושם. בגלריה יוצג העמוד הראשון.'),
       slots ? h('div', { class: 'upl-row' }, names, code) : h('div', { class: 'upl-row' }, file, preview),
       slots ? h('div', { class: 'slots' }, slotBoxes) : h('div', { class: 'upl-row' }, names, caption, code, send),
