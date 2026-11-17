@@ -34,7 +34,8 @@
       "bg": {
         "topic": "התפתחות המחשב ותוכנות ה-CAD במאה הקודמת",
         "summary": "מ-ENIAC ועד AutoCAD, ArchiCAD, Revit, בזייה, CATIA ו-Rhino.",
-        "presentations": 3
+        "presentations": 3,
+        "recording": "https://ariel-ac-il.zoom.us/rec/share/KdoCgdeWVutMy-mFD743NibnfOBTc3zl-A2cmd_XT0iE2KuEybj8DwKjy9dIpVHS.HgtsOKdcCYYSPfbY"
       },
       "app": { "topic": "AutoCAD: שכבות, בלוקים, מידות וטקסטים", "exercise": 2, "exNote": "סיום" }
     },
