@@ -1,6 +1,6 @@
 // גלריית תוצרי התרגילים 1-5. כתובות: /api/gallery?ex=N (רשימה, העלאה, מחיקה) ו-/api/gallery/img/<id>/<full|thumb>?ex=N
 import { getStore } from '@netlify/blobs';
-import { listItems, getImage, upload, putChunk, deleteOwn, deleteAdmin } from '../lib/gallery-core.mjs';
+import { listItems, getImage, upload, putChunk, deleteOwn, deleteAdmin, reviewAdmin } from '../lib/gallery-core.mjs';
 
 const EXERCISES = 5;
 const MAX_REQUEST = 5500000; // מגבלת פונקציה סינכרונית של Netlify: 6MB לבקשה
@@ -103,6 +103,7 @@ export default async (req) => {
         const store = scoped(base, 'ex' + ex + '/');
         if (b.action === 'delete') { const r = await deleteOwn(store, b.id, token); return reply(r.status, r.body); }
         if (b.action === 'admin-delete') { const r = await deleteAdmin(store, b.id, b.adminKey, env); return reply(r.status, r.body); }
+        if (b.action === 'admin-review') { const r = await reviewAdmin(store, b.id, b.status == null ? '' : String(b.status), b.adminKey, env); return reply(r.status, r.body); }
         return reply(400, { error: 'action' });
       }
       return reply(415, { error: 'content-type' });

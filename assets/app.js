@@ -960,17 +960,21 @@
       closedNote.textContent = isLocked ? 'ההעלאה לתרגיל זה תיפתח בהמשך.' : 'ההגשה נסגרה. לא ניתן להעלות עבודות נוספות.';
       closedNote.hidden = !(live && (isLocked || isClosed()));
       slotBoxes.forEach((b) => b.update());
+      // סכמות קודם, ואחר כך תכניות (בתוך כל קבוצה: החדש ראשון)
+      if (slots) items.sort((a, b) => (a.slot === 'scheme' ? 0 : 1) - (b.slot === 'scheme' ? 0 : 1) || b.ts - a.ts);
       info.textContent = live === false ? 'הגלריה לא זמינה כרגע.' : live && items.length ? items.length + ' תוצרים · לחצו על תמונה להגדלה' : '';
+      const reviewTxt = (it) => (it.review === 'ok' ? 'מאושר' : it.review === 'no' ? 'נדחה' : '');
       const lb = items.map((it) => (it.pdf
-        ? { src: imgUrl(it.id, 'full'), title: it.name, caption: [slotLabel(it.slot), it.caption, 'הועלה ' + fmtUpload(it.ts)].filter(Boolean).join(' · '), openUrl: imgUrl(it.id, 'pdf'), openLabel: 'פתיחת ה-PDF המלא' }
-        : { src: imgUrl(it.id, 'full'), title: it.name, caption: [slotLabel(it.slot), it.caption, 'הועלה ' + fmtUpload(it.ts)].filter(Boolean).join(' · '), openUrl: imgUrl(it.id, 'full') }));
+        ? { src: imgUrl(it.id, 'full'), title: it.name, caption: [slotLabel(it.slot), reviewTxt(it), it.caption, 'הועלה ' + fmtUpload(it.ts)].filter(Boolean).join(' · '), openUrl: imgUrl(it.id, 'pdf'), openLabel: 'פתיחת ה-PDF המלא' }
+        : { src: imgUrl(it.id, 'full'), title: it.name, caption: [slotLabel(it.slot), reviewTxt(it), it.caption, 'הועלה ' + fmtUpload(it.ts)].filter(Boolean).join(' · '), openUrl: imgUrl(it.id, 'full') }));
       grid.replaceChildren(...(live && !items.length
         ? [h('p', { class: 'muted' }, 'עדיין לא הועלו תוצרים. לחצו על ״העלאת התרגיל״ כדי להיות הראשונים.')]
         : items.map((it, i) =>
           h('figure', { class: 'gal-item' },
             h('button', { class: 'gal-btn', type: 'button', 'aria-label': 'הגדלה: ' + it.name, onclick: () => GalleryTools.openLightbox(lb, i) },
               h('img', { src: imgUrl(it.id, 'thumb'), alt: it.name + (it.caption ? ': ' + it.caption : ''), loading: 'lazy', width: it.w, height: it.h }),
-              it.pdf ? h('span', { class: 'pdf-badge' }, 'PDF') : null),
+              it.pdf ? h('span', { class: 'pdf-badge' }, 'PDF') : null,
+              it.review ? h('span', { class: 'rev-badge ' + it.review, role: 'img', 'aria-label': reviewTxt(it), title: reviewTxt(it) }, it.review === 'ok' ? '✓' : '✗') : null),
             h('figcaption', {}, h('strong', {}, it.name), it.slot ? h('span', { class: 'gal-slot' }, slotLabel(it.slot)) : null, it.caption ? h('span', {}, it.caption) : null,
               h('span', { class: 'gal-time' }, 'הועלה ' + fmtUpload(it.ts)),
               it.mine ? h('button', { class: 'mini', type: 'button', onclick: () => remove(it) }, 'מחיקה') : null)))));

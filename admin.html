@@ -59,7 +59,7 @@
       let editing = null; // מזהה נושא שפתוח לו טופס עריכה
       const fmt = (iso) => new Date(iso + 'T00:00:00').toLocaleDateString('he-IL', { weekday: 'short', day: 'numeric', month: 'numeric' });
       // אותה פונקציה משמשת לשיבוץ ולגלריה: הכתובת נקבעת לפי הפעולה
-      const post = (body) => fetch(body.action === 'admin-delete' ? '/api/gallery' : '/api/claims', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...body, adminKey: key }) })
+      const post = (body) => fetch(body.action === 'admin-delete' || body.action === 'admin-review' ? '/api/gallery' : '/api/claims', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...body, adminKey: key }) })
         .then(async (r) => ({ ok: r.ok, data: await r.json().catch(() => ({})) }));
       const ERR = { 'slot-full': 'התאריך מלא', slot: 'בחרו תאריך', team: 'שמות לא תקינים', admin: 'מפתח ניהול שגוי' };
 
@@ -88,7 +88,7 @@
         const ex = $('gex').value;
         let d;
         try { d = await fetch('/api/gallery?ex=' + ex, { cache: 'no-store' }).then((r) => r.json()); } catch (e) { return; }
-        const items = d.items || [];
+        const items = (d.items || []).slice().sort((a, b) => (a.slot === 'scheme' ? 0 : 1) - (b.slot === 'scheme' ? 0 : 1) || b.ts - a.ts); // סכמה קודם
         $('galsum').textContent = items.length + ' תוצרים';
         $('agal').replaceChildren(...items.map((it) => {
           const f = document.createElement('figure');
@@ -96,7 +96,7 @@
           const img = document.createElement('img'); img.src = '/api/gallery/img/' + it.id + '/thumb?ex=' + ex; img.alt = it.name; img.loading = 'lazy';
           a.append(img);
           const c = document.createElement('figcaption');
-          const n = document.createElement('strong'); n.textContent = it.name + (it.pdf ? ' (PDF)' : '');
+          const n = document.createElement('strong'); n.textContent = it.name + (it.pdf ? ' (PDF)' : '') + (it.slot ? ' · ' + (it.slot === 'scheme' ? 'סכמה' : it.slot === 'plan' ? 'תכנית' : it.slot) : '');
           c.append(n);
           if (it.caption) { const s = document.createElement('div'); s.textContent = it.caption; c.append(s); }
           const b = document.createElement('button'); b.className = 'mini'; b.type = 'button'; b.textContent = 'מחק';
@@ -106,6 +106,20 @@
             if (!r.ok) alert('המחיקה נכשלה'); else loadGallery();
           });
           c.append(b);
+          // סימון איכות העבודה: ✓ מאושר, ✗ נדחה, לחיצה חוזרת מנקה
+          const rv = document.createElement('div'); rv.style.marginTop = '4px';
+          const mkRv = (status, text, color) => {
+            const x = document.createElement('button'); x.className = 'mini'; x.type = 'button'; x.textContent = text; x.style.marginInlineEnd = '6px';
+            x.setAttribute('aria-label', status === 'ok' ? 'סימון כמאושר' : 'סימון כנדחה');
+            if (it.review === status) { x.style.background = color; x.style.color = '#fff'; x.style.borderColor = color; }
+            x.addEventListener('click', async () => {
+              const r = await post({ action: 'admin-review', id: it.id, ex: Number(ex), status: it.review === status ? '' : status });
+              if (!r.ok) alert('השמירה נכשלה'); else loadGallery();
+            });
+            return x;
+          };
+          rv.append(mkRv('ok', '✓ מאושר', '#1b7f3b'), mkRv('no', '✗ נדחה', '#b3261e'));
+          c.append(rv);
           f.append(a, c);
           return f;
         }));

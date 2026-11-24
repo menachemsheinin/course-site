@@ -55,7 +55,7 @@ async function updateIndex(store, fn) {
   return { ok: false, conflict: true };
 }
 
-const publicItem = (it, hash) => ({ id: it.id, name: it.name, caption: it.caption, ts: it.ts, w: it.w, h: it.h, pdf: !!it.pdf, slot: it.slot || null, mine: !!hash && it.owner === hash });
+const publicItem = (it, hash) => ({ id: it.id, name: it.name, caption: it.caption, ts: it.ts, w: it.w, h: it.h, pdf: !!it.pdf, slot: it.slot || null, review: it.review === 'ok' || it.review === 'no' ? it.review : null, mine: !!hash && it.owner === hash });
 
 export async function listItems(store, token) {
   const hash = token && TOKEN_RE.test(token) ? await sha256(token) : null;
@@ -184,6 +184,24 @@ export async function deleteOwn(store, id, token) {
   if (!token || !TOKEN_RE.test(token)) return json(400, { error: 'token' });
   const hash = await sha256(token);
   return removeItem(store, id, (it) => it.owner === hash);
+}
+
+// סימון המרצה: 'ok' (מאושר), 'no' (נדחה) או '' (ניקוי). נשמר באינדקס, ולכן החלפת קובץ על ידי הסטודנט מאפסת אותו
+export async function reviewAdmin(store, id, status, adminKey, env = {}) {
+  if (!env.ADMIN_KEY || !sameSecret(String(adminKey || ''), env.ADMIN_KEY)) return json(403, { error: 'admin' });
+  if (!ID_RE.test(String(id))) return json(400, { error: 'id' });
+  if (status !== 'ok' && status !== 'no' && status !== '') return json(400, { error: 'status' });
+  let found = false;
+  const r = await updateIndex(store, (list) => {
+    const it = list.find((x) => x.id === id);
+    if (!it) return null;
+    found = true;
+    if (status) it.review = status; else delete it.review;
+    return list;
+  });
+  if (!found) return json(404, { error: 'not-found' });
+  if (!r.ok) return json(503, { error: 'busy' });
+  return json(200, { ok: true });
 }
 
 export async function deleteAdmin(store, id, adminKey, env = {}) {
