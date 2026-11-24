@@ -94,6 +94,20 @@
             { "src": "assets/ex3/development-03.png" },
             { "src": "assets/ex3/development-04.webp" }
           ]
+        },
+        {
+          "title": "דוגמאות לסכמת המחשה פרוגרמטית (פיצוץ)",
+          "note": "הדוגמאות מובאות להמחשה ולמטרות לימוד בלבד. הזכויות בתמונות שייכות ליוצריהן.",
+          "items": [
+            { "src": "assets/ex3/program-01.webp" },
+            { "src": "assets/ex3/program-02.webp" },
+            { "src": "assets/ex3/program-03.png" },
+            { "src": "assets/ex3/program-04.png" },
+            { "src": "assets/ex3/program-05.png" },
+            { "src": "assets/ex3/program-06.webp" },
+            { "src": "assets/ex3/program-07.png" },
+            { "src": "assets/ex3/program-08.webp" }
+          ]
         }
       ],
       "requirements": ["יש לוודא ניקיון ואיכות גרפית, בהירות צורנית, כותרות והעמדה מושכלת על הגיליון."]
