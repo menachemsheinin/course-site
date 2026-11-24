@@ -42,11 +42,12 @@
     {
       "n": 5, "date": "2026-11-24",
       "bg": {
-        "topic": "NURBS & Meshes: התפתחות הטכנולוגיות למידול תלת-ממדי ממוחשב",
-        "summary": "מרצועת spline פיזית ועד NURBS, מול Mesh, קטמול ו-SubD.",
-        "presentations": 3
+        "topic": "אל תוך שנות ה־70",
+        "summary": "האדריכל פוגש את המחשב: מחשבים מגיעים ללקוחות פרטיים, התפתחות טכנולוגיות מידול 3D ועולם הרינדור",
+        "presentations": 3,
+        "recording": "https://ariel-ac-il.zoom.us/rec/share/lbtklyAJn94rlDO7lZNm8Mcq8zMuHdcm6QuUUxzCAG3KMscyyATprBBNYhFf6vMk.EJ-cZo7csSEk8fI1?startTime=1795503315000"
       },
-      "app": { "topic": "AutoCAD: שרטוט חתכים וחזיתות, האטצ׳ים והגדרות גרפיות להדפסה", "exercise": 3 }
+      "app": { "topic": "סכמות תלת-ממדיות", "recording": "https://ariel-ac-il.zoom.us/rec/share/4JLdMv0BLi6_mhium5z9yXFYflhBpfIgnjd_9QNc3RB-xGcsW1zVKmkJmlSZHe83.cDCh_CmCR0tdf17Y?startTime=1795512067000", "exercise": 3 }
     },
     {
       "n": 6, "date": "2026-12-01",
