@@ -803,6 +803,9 @@
     let busy = false;
     const grid = h('div', { class: 'gal' });
     const info = h('p', { class: 'muted small' });
+    const folderSum = h('summary', {});
+    const folderGrid = h('div', { class: 'gal' });
+    const folderBox = h('details', { class: 'plan-folder', hidden: true }, folderSum, folderGrid);
     const imgUrl = (id, size) => GALLERY_API + '/img/' + id + '/' + size + '?ex=' + ex;
 
     const subtabs = h('nav', { class: 'subtabs', 'aria-label': 'תרגילים' },
@@ -961,27 +964,37 @@
       closedNote.textContent = isLocked ? 'ההעלאה לתרגיל זה תיפתח בהמשך.' : 'ההגשה נסגרה. לא ניתן להעלות עבודות נוספות.';
       closedNote.hidden = !(live && (isLocked || isClosed()));
       slotBoxes.forEach((b) => b.update());
-      // סכמות קודם, ואחר כך תכניות (בתוך כל קבוצה: החדש ראשון)
-      if (slots) items.sort((a, b) => (a.slot === 'scheme' ? 0 : 1) - (b.slot === 'scheme' ? 0 : 1) || b.ts - a.ts);
+      // סכמות קודם: ✓ ואחר כך ללא סימון ואחר כך ✗ (בתוך כל דרגה: סדר השרת, החדש ראשון). התכניות נאספות בתיקייה בתחתית העמוד
+      const rank = (it) => (it.review === 'ok' ? 0 : it.review === 'no' ? 2 : 1);
+      if (slots) items.sort((a, b) => (a.slot === 'scheme' ? 0 : 1) - (b.slot === 'scheme' ? 0 : 1) || (a.slot === 'scheme' && b.slot === 'scheme' ? rank(a) - rank(b) : 0));
+      const folder = !!slots && slots.some((x) => x.id === 'plan') && slots.some((x) => x.id === 'scheme');
+      const mainItems = folder ? items.filter((it) => it.slot !== 'plan') : items;
+      const folderItems = folder ? items.filter((it) => it.slot === 'plan') : [];
       info.textContent = live === false ? 'הגלריה לא זמינה כרגע.' : live && items.length ? items.length + ' תוצרים · לחצו על תמונה להגדלה' : '';
       const reviewTxt = (it) => (it.review === 'ok' ? 'מאושר' : it.review === 'no' ? 'נדחה' : '');
-      const lb = items.map((it) => (it.pdf
-        ? { src: imgUrl(it.id, 'full'), title: it.name, caption: [slotLabel(it.slot), reviewTxt(it), it.caption, 'הועלה ' + fmtUpload(it.ts)].filter(Boolean).join(' · '), openUrl: imgUrl(it.id, 'pdf'), openLabel: 'פתיחת ה-PDF המלא' }
-        : { src: imgUrl(it.id, 'full'), title: it.name, caption: [slotLabel(it.slot), reviewTxt(it), it.caption, 'הועלה ' + fmtUpload(it.ts)].filter(Boolean).join(' · '), openUrl: imgUrl(it.id, 'full') }));
+      const label = (it) => it.name || (it.mine ? 'העבודה שלי' : slotLabel(it.slot) || 'עבודה');
+      const cap = (it) => [slotLabel(it.slot), reviewTxt(it), it.caption, it.anon ? '' : 'הועלה ' + fmtUpload(it.ts)].filter(Boolean).join(' · ');
+      const lbOf = (list) => list.map((it) => (it.pdf
+        ? { src: imgUrl(it.id, 'full'), title: label(it), caption: cap(it), openUrl: imgUrl(it.id, 'pdf'), openLabel: 'פתיחת ה-PDF המלא' }
+        : { src: imgUrl(it.id, 'full'), title: label(it), caption: cap(it), openUrl: imgUrl(it.id, 'full') }));
+      const cards = (list) => { const lb = lbOf(list); return list.map((it, i) =>
+        h('figure', { class: 'gal-item' },
+          h('button', { class: 'gal-btn', type: 'button', 'aria-label': 'הגדלה: ' + label(it), onclick: () => GalleryTools.openLightbox(lb, i) },
+            h('img', { src: imgUrl(it.id, 'thumb'), alt: label(it) + (it.caption ? ': ' + it.caption : ''), loading: 'lazy', width: it.w, height: it.h }),
+            it.pdf ? h('span', { class: 'pdf-badge' }, 'PDF') : null,
+            it.review ? h('span', { class: 'rev-badge ' + it.review, role: 'img', 'aria-label': reviewTxt(it), title: reviewTxt(it) }, it.review === 'ok' ? '✓' : '✗') : null),
+          h('figcaption', {}, it.anon && !it.mine ? null : h('strong', {}, label(it)), it.slot ? h('span', { class: 'gal-slot' }, slotLabel(it.slot)) : null, it.caption ? h('span', {}, it.caption) : null,
+            it.anon ? null : h('span', { class: 'gal-time' }, 'הועלה ' + fmtUpload(it.ts)),
+            it.mine ? h('button', { class: 'mini', type: 'button', onclick: () => remove(it) }, 'מחיקה') : null))); };
       grid.replaceChildren(...(live && !items.length
         ? [h('p', { class: 'muted' }, 'עדיין לא הועלו תוצרים. לחצו על ״העלאת התרגיל״ כדי להיות הראשונים.')]
-        : items.map((it, i) =>
-          h('figure', { class: 'gal-item' },
-            h('button', { class: 'gal-btn', type: 'button', 'aria-label': 'הגדלה: ' + it.name, onclick: () => GalleryTools.openLightbox(lb, i) },
-              h('img', { src: imgUrl(it.id, 'thumb'), alt: it.name + (it.caption ? ': ' + it.caption : ''), loading: 'lazy', width: it.w, height: it.h }),
-              it.pdf ? h('span', { class: 'pdf-badge' }, 'PDF') : null,
-              it.review ? h('span', { class: 'rev-badge ' + it.review, role: 'img', 'aria-label': reviewTxt(it), title: reviewTxt(it) }, it.review === 'ok' ? '✓' : '✗') : null),
-            h('figcaption', {}, h('strong', {}, it.name), it.slot ? h('span', { class: 'gal-slot' }, slotLabel(it.slot)) : null, it.caption ? h('span', {}, it.caption) : null,
-              h('span', { class: 'gal-time' }, 'הועלה ' + fmtUpload(it.ts)),
-              it.mine ? h('button', { class: 'mini', type: 'button', onclick: () => remove(it) }, 'מחיקה') : null)))));
+        : cards(mainItems)));
+      folderSum.textContent = 'תכניות קומת קרקע (' + folderItems.length + ')';
+      folderGrid.replaceChildren(...cards(folderItems));
+      folderBox.hidden = !folderItems.length;
     }
     async function remove(it) {
-      if (!confirm('למחוק את התוצר של ״' + it.name + '״?')) return;
+      if (!confirm('למחוק את התוצר' + (it.name ? ' של ״' + it.name + '״' : ' שלכם') + '?')) return;
       try { await galleryApi('POST', { action: 'delete', id: it.id }, ex); } catch (e) { /* ייטען מחדש */ }
       await refresh();
     }
@@ -1006,7 +1019,7 @@
         h('span', { class: 'dl-txt' }, h('b', {}, 'מועד הגשה: '), fmtDeadline(dl)),
         h('span', { class: 'dl-left' }, 'נותר: ', countdown(dl)));
     }
-    return [subtabs, h('div', { class: 'ex-head' }, h('h1', {}, 'תרגיל ' + ex), reqBtn), exTitle ? h('p', { class: 'ex-title' }, exTitle) : null, dlBox, closedNote, info, form, grid];
+    return [subtabs, h('div', { class: 'ex-head' }, h('h1', {}, 'תרגיל ' + ex), reqBtn), exTitle ? h('p', { class: 'ex-title' }, exTitle) : null, dlBox, closedNote, info, form, grid, folderBox];
   }
 
   /* ---------- הנחיות לתרגיל הפרזנטציה (קורס רקע) ---------- */

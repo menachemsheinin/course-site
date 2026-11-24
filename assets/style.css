@@ -415,3 +415,7 @@ h2.withicon { display: flex; justify-content: space-between; align-items: center
 .rev-badge { position: absolute; top: 8px; inset-inline-end: 8px; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.25rem; font-weight: 800; line-height: 1; box-shadow: 0 1px 4px #0006; }
 .rev-badge.ok { background: #1b7f3b; }
 .rev-badge.no { background: #c62828; }
+.plan-folder { margin-top: 28px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.plan-folder > summary { cursor: pointer; padding: 12px 16px; font-weight: 700; }
+.plan-folder[open] > summary { border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+.plan-folder > .gal { padding: 0 14px 14px; }

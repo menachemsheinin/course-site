@@ -57,11 +57,22 @@ async function updateIndex(store, fn) {
 
 const publicItem = (it, hash) => ({ id: it.id, name: it.name, caption: it.caption, ts: it.ts, w: it.w, h: it.h, pdf: !!it.pdf, slot: it.slot || null, review: it.review === 'ok' || it.review === 'no' ? it.review : null, mine: !!hash && it.owner === hash });
 
-export async function listItems(store, token) {
+// hide: רשימת סעיפים שהשם ושעת ההעלאה שלהם מוסתרים מהציבור (הנתונים נשמרים בשרת). הבעלים רואה את שלו.
+export async function listItems(store, token, hide = null) {
   const hash = token && TOKEN_RE.test(token) ? await sha256(token) : null;
   const cur = await store.get('index', { type: 'json' });
   const list = Array.isArray(cur) ? cur : [];
-  return json(200, { items: list.map((it) => publicItem(it, hash)).sort((a, b) => b.ts - a.ts) });
+  const out = list.map((it) => publicItem(it, hash)).sort((a, b) => b.ts - a.ts)
+    .map((it) => (Array.isArray(hide) && hide.includes(it.slot) && !it.mine ? { ...it, name: '', ts: 0, anon: true } : it));
+  return json(200, { items: out });
+}
+
+// רשימה מלאה (עם שמות) למרצה
+export async function listAdmin(store, adminKey, env = {}) {
+  if (!env.ADMIN_KEY || !sameSecret(String(adminKey || ''), env.ADMIN_KEY)) return json(403, { error: 'admin' });
+  const cur = await store.get('index', { type: 'json' });
+  const list = Array.isArray(cur) ? cur : [];
+  return json(200, { items: list.map((it) => publicItem(it, null)).sort((a, b) => b.ts - a.ts) });
 }
 
 export async function getImage(store, id, size) {

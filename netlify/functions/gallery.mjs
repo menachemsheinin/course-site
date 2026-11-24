@@ -1,6 +1,6 @@
 // גלריית תוצרי התרגילים 1-5. כתובות: /api/gallery?ex=N (רשימה, העלאה, מחיקה) ו-/api/gallery/img/<id>/<full|thumb>?ex=N
 import { getStore } from '@netlify/blobs';
-import { listItems, getImage, upload, putChunk, deleteOwn, deleteAdmin, reviewAdmin } from '../lib/gallery-core.mjs';
+import { listItems, getImage, upload, putChunk, deleteOwn, deleteAdmin, reviewAdmin, listAdmin } from '../lib/gallery-core.mjs';
 
 const EXERCISES = 5;
 const MAX_REQUEST = 5500000; // מגבלת פונקציה סינכרונית של Netlify: 6MB לבקשה
@@ -18,15 +18,15 @@ function scoped(store, prefix) {
   };
 }
 // מועד ההגשה של כל תרגיל נקרא מ-data/exercises.json של האתר עצמו (מקור אחד לאמת), עם מטמון קצר
-let dlCache = { at: 0, map: null, locked: {}, slots: {} };
+let dlCache = { at: 0, map: null, locked: {}, slots: {}, hide: {} };
 async function deadlineOf(origin, ex) {
   if (!dlCache.map || Date.now() - dlCache.at > 60000) {
     try {
       const r = await fetch(origin + '/data/exercises.json', { cache: 'no-store' });
       const j = await r.json();
-      const map = {}, locked = {}, slots = {};
-      for (const it of j.items || []) { const t = it.deadline ? Date.parse(it.deadline) : NaN; if (!Number.isNaN(t)) map[it.n] = t; if (it.upload === false) locked[it.n] = true; if (Array.isArray(it.slots) && it.slots.length) slots[it.n] = it.slots.map((x) => x.id); }
-      dlCache = { at: Date.now(), map, locked, slots };
+      const map = {}, locked = {}, slots = {}, hide = {};
+      for (const it of j.items || []) { const t = it.deadline ? Date.parse(it.deadline) : NaN; if (!Number.isNaN(t)) map[it.n] = t; if (it.upload === false) locked[it.n] = true; if (Array.isArray(it.slots) && it.slots.length) slots[it.n] = it.slots.map((x) => x.id); if (Array.isArray(it.hideNames) && it.hideNames.length) hide[it.n] = it.hideNames; }
+      dlCache = { at: Date.now(), map, locked, slots, hide };
     } catch (e) { /* נכשלה הקריאה: משתמשים במטמון האחרון, ואם אין, ההעלאה נשארת פתוחה */ }
   }
   return (dlCache.map && dlCache.map[ex]) || null;
@@ -57,7 +57,8 @@ export default async (req) => {
           },
         });
       }
-      const r = await listItems(store, token);
+      await deadlineOf(url.origin, ex); // מרענן את ההגדרות (למשל hideNames)
+      const r = await listItems(store, token, (dlCache.hide || {})[ex] || null);
       return reply(r.status, r.body);
     }
 
@@ -103,6 +104,7 @@ export default async (req) => {
         const store = scoped(base, 'ex' + ex + '/');
         if (b.action === 'delete') { const r = await deleteOwn(store, b.id, token); return reply(r.status, r.body); }
         if (b.action === 'admin-delete') { const r = await deleteAdmin(store, b.id, b.adminKey, env); return reply(r.status, r.body); }
+        if (b.action === 'admin-list') { const r = await listAdmin(store, b.adminKey, env); return reply(r.status, r.body); }
         if (b.action === 'admin-review') { const r = await reviewAdmin(store, b.id, b.status == null ? '' : String(b.status), b.adminKey, env); return reply(r.status, r.body); }
         return reply(400, { error: 'action' });
       }
