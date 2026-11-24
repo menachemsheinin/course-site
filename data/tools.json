@@ -5,7 +5,6 @@
       "title": "תוכנות הקורס",
       "items": [
         { "name": "AutoCAD", "desc": "הורדה ורישיון סטודנט", "url": "https://www.autodesk.com/education/edu-software/overview" },
-        { "name": "תרגול AutoCAD ראשוני", "desc": "ממשק פשוט לתרגול אוטוקאד ראשוני", "url": "https://autocad-ariel.netlify.app/" },
         { "name": "Rhino", "desc": "מידול NURBS", "url": "https://www.rhino3d.com/" },
         { "name": "SketchUp Web", "desc": "מודלינג בדפדפן", "url": "https://app.sketchup.com/" }
       ]
@@ -26,6 +25,7 @@
       "title": "כלים נסיוניים - פנימי",
       "items": [
         { "name": "S.A_CAD", "desc": "ממשק שרטוט", "url": "https://arch-cad-sheinin.netlify.app/" },
+        { "name": "תרגול AutoCAD ראשוני", "desc": "ממשק פשוט לתרגול אוטוקאד ראשוני", "url": "https://autocad-ariel.netlify.app/" },
         { "name": "סטודיו – מצב NURBS", "desc": "מצב NURBS בכלי הסטודיו (ניסיוני)", "url": "https://studio-sheinin.netlify.app/nurbs/" }
       ]
     }
