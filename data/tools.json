@@ -13,7 +13,6 @@
     {
       "title": "כלים חינמיים להרחבה",
       "items": [
-        { "name": "S.A_CAD", "desc": "ממשק שרטוט", "url": "https://arch-cad-sheinin.netlify.app/" },
         { "name": "ArtCraft Apps", "desc": "סט כלים חינמיים חדשים, כולל CADCraft לשרטוט ועיצוב", "url": "https://getartcraft.com/apps" },
         { "name": "Blender", "desc": "מודלינג, אנימציה ורינדור", "url": "https://www.blender.org/" },
         { "name": "QGIS", "desc": "מערכת מידע גיאוגרפי", "url": "https://qgis.org/" },
@@ -21,6 +20,13 @@
         { "name": "Inkscape", "desc": "גרפיקה וקטורית", "url": "https://inkscape.org/" },
         { "name": "Photopea", "desc": "עורך תמונות בדפדפן", "url": "https://www.photopea.com/" },
         { "name": "Google Earth Pro", "desc": "תצלומי אוויר והקשר אתר", "url": "https://www.google.com/earth/versions/" }
+      ]
+    },
+    {
+      "title": "כלים נסיוניים - פנימי",
+      "items": [
+        { "name": "S.A_CAD", "desc": "ממשק שרטוט", "url": "https://arch-cad-sheinin.netlify.app/" },
+        { "name": "סטודיו – מצב NURBS", "desc": "מצב NURBS בכלי הסטודיו (ניסיוני)", "url": "https://studio-sheinin.netlify.app/nurbs/" }
       ]
     }
   ]
