@@ -84,6 +84,18 @@
       "slots": [
         { "id": "sheet", "label": "גיליון הסכמות (PDF)", "hint": "PDF אחד, עד 10MB" }
       ],
+      "exampleGroups": [
+        {
+          "title": "דוגמאות לסכמת התפתחות / ניתוח מורפולוגי",
+          "note": "הדוגמאות מובאות להמחשה ולמטרות לימוד בלבד. הזכויות בתמונות שייכות ליוצריהן.",
+          "items": [
+            { "src": "assets/ex3/development-01.png" },
+            { "src": "assets/ex3/development-02.png" },
+            { "src": "assets/ex3/development-03.png" },
+            { "src": "assets/ex3/development-04.webp" }
+          ]
+        }
+      ],
       "requirements": ["יש לוודא ניקיון ואיכות גרפית, בהירות צורנית, כותרות והעמדה מושכלת על הגיליון."]
     },
     { "n": 4, "upload": false, "requirements": [] },
